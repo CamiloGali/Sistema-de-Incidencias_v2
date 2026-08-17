@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login administrador</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-image: url('fondo_b.png'); margin:0; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .box { background:#fff; padding:28px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; border:1px solid #d8d1d1; }
+        h2 { margin:0 0 8px 0; color:#8c1625; }
+        p { color:#5b5b5b; margin:0 0 18px 0; }
+        /* Alinear tamaño de input y botón */
+        input, button {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            height: 48px;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+        input {
+            border: 1px solid #d4c2c3;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+        button {
+            background:#8c1625;
+            color:#fff;
+            border:none;
+            font-weight:700;
+            cursor:pointer;
+        }
+        .note { font-size:0.9rem; color:#6b6b6b; margin-top:12px; text-align:center; }
+        .error { color:#a41624; font-weight:700; margin-bottom:8px; display:none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 align="center">Acceso administrador</h2>
+        <p>Introduce la contraseña para acceder al panel de incidentes.</p>
+        <div id="error" class="error">Contraseña incorrecta</div>
+        <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+        <button id="btnLogin">Ingresar</button>
+    </div>
+
+    <script>
+        const BTN = document.getElementById('btnLogin');
+        const PASS = document.getElementById('password');
+        const ERROR = document.getElementById('error');
+
+        // Cambia esta contraseña a la que prefieras
+        const ADMIN_PASSWORD = 'sub_admin';
+
+        BTN.addEventListener('click', () => {
+            const v = PASS.value || '';
+            if (v === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminAuth', 'true');
+                window.location = 'admin.html';
+            } else {
+                ERROR.style.display = 'block';
+            }
+        });
+
+        PASS.addEventListener('keydown', (e) => { if (e.key === 'Enter') BTN.click(); });
+    </script>
+</body>
+</html>

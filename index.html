@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reporte de anomalías</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('fondo_b.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+            margin: 0;
+            color: #333;
+        }
+
+        nav {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            background: #8c1625;
+            color: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        nav .brand {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 700px;
+            background: #ffffff;
+            padding: 0;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid #d8d1d1;
+        }
+
+        .card-header {
+            background: #8c1625;
+            color: #ffffff;
+            padding: 22px 24px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        h1 {
+            color: #333333;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: #5b5b5b;
+            line-height: 1.6;
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: 700;
+            color: #4d3036;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 8px;
+            border: 1px solid #d4c2c3;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background: #fbf7f7;
+            color: #302e2f;
+        }
+
+        input[type="file"] {
+            background: #ffffff;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #b03a4a;
+            box-shadow: 0 0 0 3px rgba(140, 22, 37, 0.12);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 96px;
+        }
+
+        /* Estilos para la previsualización de la imagen */
+        #preview-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px dashed #d4c2c3;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #fbf7f7;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #remove-image {
+            background: #5b5b5b;
+            margin-top: 0;
+            width: auto;
+            padding: 8px 16px;
+        }
+
+        #remove-image:hover {
+            background: #333333;
+        }
+
+        button {
+            margin-top: 18px;
+            background: #8c1625;
+            color: white;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #701122;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            margin-top: 16px;
+            color: #8c1625;
+            font-weight: 700;
+        }
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: #8c1625;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+            display: none;
+            z-index: 100;
+        }
+
+        .toast.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand">Sistema de reporte de incidentes ESTi</div>
+        <a href="admin-login.html">Iniciar sesión como admin</a>
+    </nav>
+    <div class="card">
+        <div class="card-header">Reporte de anomalías</div>
+        <div class="card-body">
+            <h1>Reporte de anomalías</h1>
+            <p>Selecciona el tipo de espacio y describe la incidencia que deseas reportar.</p>
+
+            <form id="reporteForm">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+
+                <label for="tipoLugar">Tipo de espacio:</label>
+                <select id="tipoLugar" name="tipoLugar" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Aula">Aula</option>
+                    <option value="Baño">Baño</option>
+                </select>
+
+                <div id="edificioGroup" class="hidden">
+                    <label for="edificio">Edificio:</label>
+                    <select id="edificio" name="edificio">
+                        <option value="">Selecciona un edificio</option>
+                        <option value="Modulo 1">Módulo 1</option>
+                        <option value="Modulo 2">Módulo 2</option>
+                        <option value="Modulo 3">Módulo 3</option>
+                        <option value="Modulo 4">Módulo 4</option>
+                        <option value="Modulo 5">Módulo 5</option>
+                        <option value="Laboratorios">Laboratorios</option>
+                    </select>
+                </div>
+
+                <div id="generoGroup" class="hidden">
+                    <label for="genero">Género:</label>
+                    <select id="genero" name="genero">
+                        <option value="">Selecciona género</option>
+                        <option value="Hombres">Baño de hombres</option>
+                        <option value="Mujeres">Baño de mujeres</option>
+                    </select>
+                </div>
+
+                <div id="pisoGroup" class="hidden">
+                    <label for="piso">Piso:</label>
+                    <select id="piso" name="piso">
+                        <option value="">Selecciona piso</option>
+                        <option value="Planta alta">Planta alta</option>
+                        <option value="Planta baja">Planta baja</option>
+                    </select>
+                </div>
+
+                <label for="ubicacion">Ubicación específica:</label>
+                <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Aula 302 o Baño del primer piso">
+
+                <label for="descripcion">Descripción de la anomalía:</label>
+                <textarea id="descripcion" name="descripcion" required></textarea>
+
+                <!-- NUEVA SECCIÓN DE EVIDENCIA FOTOGRÁFICA -->
+                <label for="evidencia">Evidencia fotográfica (Opcional):</label>
+                <input type="file" id="evidencia" name="evidencia" accept="image/*">
+                
+                <div id="preview-container" class="hidden">
+                    <img id="image-preview" src="" alt="Vista previa">
+                    <button type="button" id="remove-image">Quitar imagen</button>
+                </div>
+                <!-- FIN SECCIÓN DE EVIDENCIA -->
+
+                <button type="submit">Enviar reporte</button>
+                <p id="mensaje" class="message"></p>
+            </form>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'incidentes-reporte';
+        const CHANNEL_NAME = 'incidentes-canal';
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:3000'
+            : 'https://sistema-de-incidencias.onrender.com';
+
+        // Elementos del DOM
+        const tipoLugar = document.getElementById('tipoLugar');
+        const edificioGroup = document.getElementById('edificioGroup');
+        const edificioSelect = document.getElementById('edificio');
+        const generoGroup = document.getElementById('generoGroup');
+        const generoSelect = document.getElementById('genero');
+        const pisoGroup = document.getElementById('pisoGroup');
+        const pisoSelect = document.getElementById('piso');
+        const form = document.getElementById('reporteForm');
+        const mensaje = document.getElementById('mensaje');
+        const toast = document.getElementById('toast');
+        
+        // Elementos para la evidencia fotográfica
+        const evidenciaInput = document.getElementById('evidencia');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageBtn = document.getElementById('remove-image');
+        let base64Image = ''; // Variable para almacenar la imagen codificada
+
+        const bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
+
+        async function getIncidentes() {
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes`);
+                if (!response.ok) throw new Error('No disponible');
+                return await response.json();
+            } catch {
+                const raw = localStorage.getItem(STORAGE_KEY) || '[]';
+                try {
+                    return JSON.parse(raw);
+                } catch {
+                    return [];
+                }
+            }
+        }
+
+        function getResponsablesModulo(edificio) {
+            const responsablesPorModulo = {
+                'Modulo 1': ['Hermelinda', 'Maika'],
+                'Modulo 2': ['Liliana', 'Diego'],
+                'Modulo 3': ['Anita', 'Ricardo'],
+                'Modulo 4': ['Oscar', 'Jesus'],
+                'Modulo 5': ['Gabriela'],
+                'Laboratorios':[]
+            };
+
+            const modulo = String(edificio || '').trim();
+            return responsablesPorModulo[modulo] || ['Sin asignar'];
+        }
+
+        async function saveIncidente(incidente) {
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(incidente)
+                });
+
+                if (!response.ok) throw new Error('Error en API');
+                return await response.json();
+            } catch {
+                const incidentes = await getIncidentes();
+                incidentes.push(incidente);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(incidentes));
+            }
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast.hideTimeout);
+            toast.hideTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // Lógica para mostrar ocultar campos condicionales
+        tipoLugar.addEventListener('change', () => {
+            const mostrarEdificio = tipoLugar.value === 'Aula';
+            const mostrarGenero = tipoLugar.value === 'Baño';
+
+            edificioGroup.classList.toggle('hidden', !mostrarEdificio);
+            edificioSelect.required = mostrarEdificio;
+            if (!mostrarEdificio) edificioSelect.value = '';
+
+            generoGroup.classList.toggle('hidden', !mostrarGenero);
+            generoSelect.required = mostrarGenero;
+            if (!mostrarGenero) {
+                generoSelect.value = '';
+                pisoSelect.value = '';
+                pisoGroup.classList.add('hidden');
+                pisoSelect.required = false;
+            }
+        });
+
+        generoSelect.addEventListener('change', () => {
+            const mostrarPiso = generoSelect.value === 'Hombres' || generoSelect.value === 'Mujeres';
+            pisoGroup.classList.toggle('hidden', !mostrarPiso);
+            pisoSelect.required = mostrarPiso;
+            if (!mostrarPiso) pisoSelect.value = '';
+        });
+
+        // LÓGICA DE LA EVIDENCIA FOTOGRÁFICA
+        evidenciaInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                // Limitar tamaño a 2MB para evitar saturar el localStorage
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('La imagen es demasiado grande. Por favor, selecciona una menor a 2MB.');
+                    removeImageBtn.click();
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64Image = e.target.result; // Se guarda la cadena Base64
+                    imagePreview.src = base64Image;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file); // Lee el archivo como URL de datos (Base64)
+            } else {
+                removeImageBtn.click();
+            }
+        });
+
+        // Botón para quitar la imagen seleccionada
+        removeImageBtn.addEventListener('click', function() {
+            evidenciaInput.value = '';
+            base64Image = '';
+            imagePreview.src = '';
+            previewContainer.classList.add('hidden');
+        });
+
+        // ENVÍO DEL FORMULARIO
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (tipoLugar.value === 'Aula' && !edificioSelect.value) {
+                mensaje.textContent = 'Selecciona el edificio antes de enviar el reporte.';
+                return;
+            }
+
+            if (tipoLugar.value === 'Baño') {
+                if (!generoSelect.value) {
+                    mensaje.textContent = 'Selecciona el género del baño.';
+                    return;
+                }
+                if (!pisoSelect.value) {
+                    mensaje.textContent = 'Selecciona el piso del baño.';
+                    return;
+                }
+            }
+
+            const moduloAsignado = edificioSelect.value || 'Sin módulo';
+            const incidente = {
+                fecha: new Date().toISOString(),
+                nombre: document.getElementById('nombre').value.trim(),
+                tipoLugar: tipoLugar.value,
+                edificio: edificioSelect.value,
+                genero: generoSelect ? generoSelect.value : '',
+                piso: pisoSelect ? pisoSelect.value : '',
+                ubicacion: document.getElementById('ubicacion').value.trim(),
+                descripcion: document.getElementById('descripcion').value.trim(),
+                evidencia: base64Image,
+                status: 'En curso',
+                responsable: getResponsablesModulo(moduloAsignado)[0] || 'Sin asignar'
+            };
+
+            await saveIncidente(incidente);
+            if (bc) {
+                bc.postMessage({ type: 'nuevo-reporte' });
+            }
+            window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: localStorage.getItem(STORAGE_KEY) }));
+
+            mensaje.textContent = 'Reporte enviado correctamente. Gracias por tu ayuda.';
+            showToast('Reporte enviado. El panel de incidentes se actualizará automáticamente.');
+            
+            // Limpiar formulario y reiniciar vistas
+            form.reset();
+            edificioGroup.classList.add('hidden');
+            generoGroup.classList.add('hidden');
+            pisoGroup.classList.add('hidden');
+            removeImageBtn.click();
+        });
+    </script>
+</body>
+</html>

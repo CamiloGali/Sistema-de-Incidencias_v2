@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Incidentes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ece9e7;
+            margin: 0;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .page-header {
+            background: #8c1625;
+            color: white;
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .page-header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.08);
+        }
+
+        .page-header a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .container {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-card div {
+            flex: 1 1 220px;
+        }
+
+        .status-card span {
+            display: block;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #8c1625;
+        }
+
+        .status-card p {
+            margin: 6px 0 0;
+            color: #565050;
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar label {
+            font-weight: 700;
+            color: #4a4445;
+        }
+
+        .filter-bar select {
+            min-width: 180px;
+            padding: 10px 12px;
+            border: 1px solid #d4c2c3;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+        }
+
+        .export-btn {
+            margin-left: auto;
+            background: #8c1625;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .export-btn:hover {
+            background: #701122;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 18px;
+        }
+
+        .status-select, .responsable-select {
+            width: 100%;
+            min-width: 160px;
+            padding: 9px 10px;
+            border: 1px solid #d4c2c3;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #8c1625;
+            color: white;
+            font-weight: 700;
+        }
+
+        td {
+            color: #4a4445;
+        }
+
+        tbody tr:hover {
+            background: #fcf2f4;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            background: #8c1625;
+            color: white;
+            padding: 16px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            display: none;
+            z-index: 10;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #5b5b5b;
+        }
+
+        /* Estilos para la evidencia en miniatura */
+        .evidencia-img {
+            max-width: 60px;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #d4c2c3;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .evidencia-img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .no-evidencia {
+            color: #999;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        /* Modal para ver la imagen en grande */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8); 
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Protección simple: requiere login previo en admin-login.html
+        if (sessionStorage.getItem('adminAuth') !== 'true') {
+            window.location = 'admin-login.html';
+        }
+    </script>
+    <header class="page-header">
+        <h1>Panel de Incidentes</h1>
+        <div style="display:flex;gap:12px;align-items:center">
+            <a href="index.html">Ir a reporte</a>
+            <button id="logoutBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:white;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="status-card">
+            <div>
+                <span id="totalIncidentes">0</span>
+                <p>Total de reportes</p>
+            </div>
+            <div>
+                <span id="incidentesCompletados">0</span>
+                <p>Reportes completados</p>
+            </div>
+            <div>
+                <span id="ultimosReportes">0</span>
+                <p>Reportes recientes</p>
+            </div>
+            <div>
+                <span id="fechaActual">-</span>
+                <p>Última actualización</p>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <label for="mesFiltro">Filtrar por mes:</label>
+            <select id="mesFiltro">
+                <option value="todos">Todos los meses</option>
+            </select>
+            <button type="button" class="export-btn" id="exportPdfBtn">Descargar PDF</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Edificio</th>
+                        <th>Ubicación</th>
+                        <th>Descripción</th>
+                        <th>Evidencia</th>
+                        <th>Estado</th>
+                        <th>Responsable del módulo</th>
+                    </tr>
+                </thead>
+                <tbody id="incidentesBody">
+                    <tr class="empty-state"><td colspan="9">Aún no hay incidentes registrados.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="printReport" style="display:none;"></div>
+
+    <!-- Modal para visulizar las imagenes a pantalla completa -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="cerrarModal()">&times;</span>
+        <img class="modal-content" id="imgFull">
+    </div>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #printReport, #printReport * {
+                visibility: visible;
+            }
+
+            #printReport {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                box-sizing: border-box;
+                background: white;
+                color: #333;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <script>
+        const STORAGE_KEY = 'incidentes-reporte';
+        const CHANNEL_NAME = 'incidentes-canal';
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:3000'
+            : 'https://sistema-de-incidencias.onrender.com';
+        const STATUS_OPTIONS = ['En curso', 'Completado'];
+        const RESPONSABLES_POR_MODULO = {
+                'Modulo 1': ['Hermelinda', 'Maika'],
+                'Modulo 2': ['Liliana', 'Diego'],
+                'Modulo 3': ['Anita', 'Ricardo'],
+                'Modulo 4': ['Oscar', 'Jesus'],
+                'Modulo 5': ['Gabriela'],
+                'Laboratorios':[]
+        };
+
+        const toast = document.getElementById('toast');
+        const totalIncidentes = document.getElementById('totalIncidentes');
+        const incidentesCompletados = document.getElementById('incidentesCompletados');
+        const ultimosReportes = document.getElementById('ultimosReportes');
+        const fechaActual = document.getElementById('fechaActual');
+        const incidentesBody = document.getElementById('incidentesBody');
+        const mesFiltro = document.getElementById('mesFiltro');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const printReport = document.getElementById('printReport');
+        
+        // Elementos del Modal
+        const modal = document.getElementById('imageModal');
+        const imgFull = document.getElementById('imgFull');
+
+        const bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
+
+        async function getIncidentes() {
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes`);
+                if (!response.ok) throw new Error('No disponible');
+                return await response.json();
+            } catch {
+                const raw = localStorage.getItem(STORAGE_KEY) || '[]';
+                try {
+                    return JSON.parse(raw);
+                } catch {
+                    return [];
+                }
+            }
+        }
+
+        function setIncidentes(lista) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+        }
+
+        function formatDate(value) {
+            const date = new Date(value);
+            return date.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+        }
+
+        function getMesKey(dateValue) {
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) return null;
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function getNombreMes(mesKey) {
+            if (!mesKey) return 'Mes no disponible';
+            const [year, month] = mesKey.split('-').map(Number);
+            const date = new Date(year, month - 1, 1);
+            return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        }
+
+        function getIncidentesFiltrados(incidentes = []) {
+            if (!mesFiltro || !mesFiltro.value || mesFiltro.value === 'todos') {
+                return incidentes;
+            }
+
+            return incidentes.filter(item => getMesKey(item.fecha) === mesFiltro.value);
+        }
+
+        function llenarOpcionesMeses(incidentes = []) {
+            const meses = [...new Set(incidentes
+                .map(item => getMesKey(item.fecha))
+                .filter(Boolean))]
+                .sort();
+
+            const actualValue = mesFiltro.value;
+            mesFiltro.innerHTML = '<option value="todos">Todos los meses</option>';
+
+            meses.forEach(mesKey => {
+                const option = document.createElement('option');
+                option.value = mesKey;
+                option.textContent = getNombreMes(mesKey);
+                if (actualValue === mesKey) {
+                    option.selected = true;
+                }
+                mesFiltro.appendChild(option);
+            });
+
+            if (!meses.includes(actualValue) && actualValue !== 'todos') {
+                mesFiltro.value = 'todos';
+            }
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast.hideTimeout);
+            toast.hideTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        function getEdificioDisplay(edificio) {
+            const legacyMap = {
+                'Modulo 1': 'Módulo 1',
+                'Modulo 2': 'Módulo 2',
+                'Modulo 3': 'Módulo 3',
+                'Modulo 4': 'Módulo 4',
+                'Modulo 5': 'Módulo 5',
+                'Laboratorios': 'Laboratorios'
+            };
+            if (!edificio) return '-';
+            return legacyMap[edificio] || edificio;
+        }
+
+        function getModuloKey(edificio) {
+            const value = String(edificio || '').trim();
+            if (!value) return 'Sin módulo';
+
+            const normalized = value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (normalized.includes('modulo 1') || normalized.includes('modulo1') || normalized.includes('edificio a')) return 'Modulo 1';
+            if (normalized.includes('modulo 2') || normalized.includes('modulo2') || normalized.includes('edificio b')) return 'Modulo 2';
+            if (normalized.includes('modulo 3') || normalized.includes('modulo3') || normalized.includes('edificio c')) return 'Modulo 3';
+            if (normalized.includes('modulo 4') || normalized.includes('modulo4') || normalized.includes('edificio d')) return 'Modulo 4';
+            if (normalized.includes('modulo 5') || normalized.includes('modulo5') || normalized.includes('edificio e')) return 'Modulo 5';
+            if (normalized.includes('laboratorio')) return 'Laboratorios';
+            return value;
+        }
+
+        function getResponsablesModulo(edificio) {
+            const moduloKey = getModuloKey(edificio);
+            return RESPONSABLES_POR_MODULO[moduloKey] || ['Sin asignar'];
+        }
+
+        function getResponsableActual(item) {
+            if (item.responsable) return item.responsable;
+            const responsables = getResponsablesModulo(item.edificio);
+            return responsables[0] || 'Sin asignar';
+        }
+
+        async function updateIncidenteField(index, field, value) {
+            const incidentes = await getIncidentes();
+            const item = incidentes[index];
+            if (!item) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ [field]: value })
+                });
+
+                if (!response.ok) throw new Error('Error en API');
+            } catch {
+                incidentes[index][field] = value;
+                setIncidentes(incidentes);
+            }
+
+            await renderIncidentes();
+            showToast(field === 'status' ? 'Estado actualizado' : 'Responsable asignado');
+        }
+
+        // Funciones para el Modal de Imágenes
+        function abrirModal(srcBase64) {
+            imgFull.src = srcBase64;
+            modal.classList.add('show');
+        }
+
+        function cerrarModal() {
+            modal.classList.remove('show');
+            imgFull.src = '';
+        }
+
+        // Cierra el modal si se hace clic fuera de la imagen
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                cerrarModal();
+            }
+        });
+
+        function buildPrintableReport() {
+            const incidentes = getIncidentesFiltrados();
+            const tituloFiltro = mesFiltro.value === 'todos' ? 'Todos los meses' : getNombreMes(mesFiltro.value);
+
+            if (!incidentes.length) {
+                printReport.innerHTML = `
+                    <h2>Reporte de incidentes</h2>
+                    <p>Filtro: ${tituloFiltro}</p>
+                    <p>No hay incidentes para este período.</p>
+                `;
+                return;
+            }
+
+            const filas = incidentes.slice().reverse().map(item => `
+                <tr>
+                    <td>${formatDate(item.fecha)}</td>
+                    <td>${item.nombre}</td>
+                    <td>${item.tipoLugar}</td>
+                    <td>${getEdificioDisplay(item.edificio)}</td>
+                    <td>${item.ubicacion}</td>
+                    <td>${item.descripcion}</td>
+                    <td>${item.status || 'En curso'}</td>
+                    <td>${item.responsable || 'Sin asignar'}</td>
+                </tr>
+            `).join('');
+
+            printReport.innerHTML = `
+                <h2>Reporte de incidentes</h2>
+                <p><strong>Filtro:</strong> ${tituloFiltro}</p>
+                <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Fecha</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Nombre</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Tipo</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Edificio</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Ubicación</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Descripción</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Estado</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>${filas}</tbody>
+                </table>
+            `;
+        }
+
+        function exportarPdfFiltrado() {
+            buildPrintableReport();
+            window.print();
+        }
+
+        async function renderIncidentes() {
+            const incidentesTodos = await getIncidentes();
+            const incidentes = getIncidentesFiltrados(incidentesTodos);
+
+            totalIncidentes.textContent = incidentesTodos.length;
+            incidentesCompletados.textContent = incidentesTodos.filter(item => (item.status || 'En curso') === 'Completado').length;
+            ultimosReportes.textContent = incidentes.slice(-5).length;
+            fechaActual.textContent = incidentes.length ? formatDate(incidentes[incidentes.length - 1].fecha) : '-';
+
+            llenarOpcionesMeses(incidentesTodos);
+            mesFiltro.value = mesFiltro.value || 'todos';
+
+            incidentesBody.innerHTML = '';
+            if (!incidentes.length) {
+                incidentesBody.innerHTML = '<tr class="empty-state"><td colspan="9">No hay incidentes para este mes.</td></tr>';
+                return;
+            }
+
+            incidentes.slice().reverse().forEach((item, reverseIndex) => {
+                const originalIndex = incidentes.length - 1 - reverseIndex;
+                const status = item.status || 'En curso';
+                const responsableActual = getResponsableActual(item);
+                const responsables = getResponsablesModulo(item.edificio);
+
+                const statusOptions = STATUS_OPTIONS.map(option => `
+                    <option value="${option}" ${option === status ? 'selected' : ''}>${option}</option>
+                `).join('');
+
+                const responsableOptions = responsables.map(persona => `
+                    <option value="${persona}" ${persona === responsableActual ? 'selected' : ''}>${persona}</option>
+                `).join('');
+
+                const row = document.createElement('tr');
+                const evidenciaHTML = item.evidencia
+                    ? `<img src="${item.evidencia}" class="evidencia-img" alt="Evidencia" onclick="abrirModal('${item.evidencia}')" title="Clic para ampliar">`
+                    : `<span class="no-evidencia">Sin imagen</span>`;
+
+                row.innerHTML = `
+                    <td>${formatDate(item.fecha)}</td>
+                    <td>${item.nombre}</td>
+                    <td>${item.tipoLugar}</td>
+                    <td>${getEdificioDisplay(item.edificio)}</td>
+                    <td>${item.ubicacion}</td>
+                    <td>${item.descripcion}</td>
+                    <td>${evidenciaHTML}</td>
+                    <td>
+                        <select class="status-select" data-index="${originalIndex}" data-field="status">
+                            ${statusOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="responsable-select" data-index="${originalIndex}" data-field="responsable">
+                            ${responsableOptions}
+                        </select>
+                    </td>
+                `;
+                incidentesBody.appendChild(row);
+            });
+        }
+
+        mesFiltro.addEventListener('change', () => {
+            renderIncidentes();
+        });
+
+        exportPdfBtn.addEventListener('click', exportarPdfFiltrado);
+
+        document.addEventListener('change', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) return;
+
+            if (target.matches('.status-select') || target.matches('.responsable-select')) {
+                const index = Number(target.dataset.index);
+                const field = target.dataset.field;
+                const value = target.value;
+                updateIncidenteField(index, field, value);
+            }
+        });
+
+        function handleExternalReport(event) {
+            if (event.data && event.data.type === 'nuevo-reporte') {
+                showToast('Nueva incidencia registrada.');
+                renderIncidentes();
+            }
+        }
+
+        function handleStorageEvent(event) {
+            if (event.key === STORAGE_KEY) {
+                renderIncidentes();
+                showToast('Actualizado con el último reporte.');
+            }
+        }
+
+        if (bc) {
+            bc.addEventListener('message', handleExternalReport);
+        }
+        window.addEventListener('storage', handleStorageEvent);
+
+        renderIncidentes();
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('adminAuth');
+            window.location = 'index.html';
+        });
+    </script>
+</body>
+</html>
