@@ -8,8 +8,9 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-image: url('fondo_b.png'); margin:0; display:flex; align-items:center; justify-content:center; height:100vh; }
-        .box { background:#fff; padding:28px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; border:1px solid #d8d1d1; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-image: url('fondo_b.png'); background-size: cover; margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:16px; }
+        .box { background:#fff; padding:28px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; max-width:100%; border:1px solid #d8d1d1; }
         h2 { margin:0 0 8px 0; color:#8c1625; }
         p { color:#5b5b5b; margin:0 0 18px 0; }
         /* Alinear tamaño de input y botón */
@@ -51,6 +52,9 @@
         .note { font-size:0.9rem; color:#6b6b6b; margin-top:12px; text-align:center; }
         .error { color:#a41624; font-weight:700; margin-bottom:8px; display:none; }
         .hidden { display:none; }
+        @media (max-width: 420px) {
+            .box { padding:22px 18px; }
+        }
     </style>
 </head>
 <body>

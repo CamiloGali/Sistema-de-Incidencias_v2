@@ -8,6 +8,10 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('fondo_b.png');
@@ -220,7 +224,7 @@
 
         @media (max-width: 600px) {
             body {
-                padding: 14px;
+                padding: 10px;
             }
 
             nav {
@@ -228,6 +232,25 @@
                 flex-direction: column;
                 gap: 10px;
                 padding: 14px 16px;
+                margin-bottom: 12px;
+            }
+
+            nav .brand,
+            nav a {
+                overflow-wrap: anywhere;
+            }
+
+            .card-body {
+                padding: 18px 14px;
+            }
+
+            .card-header {
+                padding: 18px 14px;
+                font-size: 1.2rem;
+            }
+
+            h1 {
+                font-size: 1.3rem;
             }
 
             footer {
@@ -241,7 +264,7 @@
 <body>
     <nav>
         <div class="brand">Sistema de reporte de incidentes ESTi</div>
-        <a href="admin-login.html">Iniciar sesión</a>
+        <a href="admin-login.html">Iniciar sesión como admin</a>
     </nav>
     <div class="card">
         <div class="card-header">Reporte de anomalías</div>
