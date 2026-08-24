@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Reporte de anomalías</title>
+    <meta name="theme-color" content="#8c1625">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -196,6 +199,43 @@
         .toast.show {
             display: block;
         }
+
+        footer {
+            width: 100%;
+            max-width: 700px;
+            box-sizing: border-box;
+            margin-top: 20px;
+            padding: 14px 20px;
+            color: #ffffff;
+            background: rgba(91, 91, 91, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            font-size: 0.78rem;
+            font-weight: 700;
+            line-height: 1.5;
+            letter-spacing: 0.03em;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 14px;
+            }
+
+            nav {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+                padding: 14px 16px;
+            }
+
+            footer {
+                margin-top: 14px;
+                padding: 12px 14px;
+                font-size: 0.72rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -273,14 +313,16 @@
         </div>
     </div>
     <div id="toast" class="toast"></div>
-    <footer>Realizado Por Daniel Camilo Garcia Galicia LTI</footer>
+   
 
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
+        }
+
         const STORAGE_KEY = 'incidentes-reporte';
         const CHANNEL_NAME = 'incidentes-canal';
-        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-            ? 'http://localhost:3000'
-            : 'https://sistema-de-incidencias-v2.onrender.com';
+        const API_URL = window.location.origin;
 
         // Elementos del DOM
         const tipoLugar = document.getElementById('tipoLugar');
@@ -440,6 +482,7 @@
 
             const moduloAsignado = edificioSelect.value || 'Sin módulo';
             const incidente = {
+                id: Date.now(),
                 fecha: new Date().toISOString(),
                 nombre: document.getElementById('nombre').value.trim(),
                 tipoLugar: tipoLugar.value,
@@ -470,5 +513,6 @@
             removeImageBtn.click();
         });
     </script>
+<footer>PROYECTO REALIZADO POR DANIEL CAMILO GARCIA GALICIA</footer>
 </body>
 </html>

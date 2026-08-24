@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Login administrador</title>
+    <title>Acceso al sistema</title>
+    <meta name="theme-color" content="#8c1625">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-image: url('fondo_b.png'); margin:0; display:flex; align-items:center; justify-content:center; height:100vh; }
         .box { background:#fff; padding:28px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; border:1px solid #d8d1d1; }
@@ -24,6 +27,20 @@
             margin-bottom: 12px;
             background: #fff;
         }
+
+        select {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            height: 48px;
+            margin-bottom: 12px;
+            border: 1px solid #d4c2c3;
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            font-size: 1rem;
+        }
         button {
             background:#8c1625;
             color:#fff;
@@ -33,29 +50,67 @@
         }
         .note { font-size:0.9rem; color:#6b6b6b; margin-top:12px; text-align:center; }
         .error { color:#a41624; font-weight:700; margin-bottom:8px; display:none; }
+        .hidden { display:none; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2 align="center">Acceso administrador</h2>
-        <p>Introduce la contraseña para acceder al panel de incidentes.</p>
-        <div id="error" class="error">Contraseña incorrecta</div>
+        <h2 align="center">Acceso al sistema</h2>
+        <p>Selecciona tu tipo de usuario e introduce tus datos para consultar los reportes.</p>
+        <select id="tipoUsuario" aria-label="Tipo de usuario">
+            <option value="admin">Administrador</option>
+            <option value="intendente">Intendente</option>
+        </select>
+        <select id="intendente" class="hidden" aria-label="Nombre del intendente">
+            <option value="">Selecciona tu nombre</option>
+            <option value="Hermelinda">Hermelinda</option>
+            <option value="Maika">Maika</option>
+            <option value="Liliana">Liliana</option>
+            <option value="Diego">Diego</option>
+            <option value="Anita">Anita</option>
+            <option value="Ricardo">Ricardo</option>
+            <option value="Oscar">Oscar</option>
+            <option value="Jesus">Jesus</option>
+            <option value="Gabriela">Gabriela</option>
+        </select>
+        <div id="error" class="error">Datos incorrectos</div>
         <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
         <button id="btnLogin">Ingresar</button>
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
+        }
+
         const BTN = document.getElementById('btnLogin');
         const PASS = document.getElementById('password');
         const ERROR = document.getElementById('error');
+        const TIPO_USUARIO = document.getElementById('tipoUsuario');
+        const INTENDENTE = document.getElementById('intendente');
 
-        // Cambia esta contraseña a la que prefieras
         const ADMIN_PASSWORD = 'sub_admin';
+        const INTENDENTE_PASSWORD = 'intendente';
+
+        TIPO_USUARIO.addEventListener('change', () => {
+            const esIntendente = TIPO_USUARIO.value === 'intendente';
+            INTENDENTE.classList.toggle('hidden', !esIntendente);
+            PASS.placeholder = esIntendente ? 'Contraseña de intendente' : 'Contraseña de administrador';
+            ERROR.style.display = 'none';
+        });
 
         BTN.addEventListener('click', () => {
             const v = PASS.value || '';
-            if (v === ADMIN_PASSWORD) {
-                sessionStorage.setItem('adminAuth', 'true');
+            const esAdmin = TIPO_USUARIO.value === 'admin';
+            const nombre = INTENDENTE.value;
+            const accesoValido = esAdmin
+                ? v === ADMIN_PASSWORD
+                : Boolean(nombre) && v === INTENDENTE_PASSWORD;
+
+            if (accesoValido) {
+                sessionStorage.setItem('adminAuth', esAdmin ? 'true' : 'false');
+                sessionStorage.setItem('usuarioRol', esAdmin ? 'admin' : 'intendente');
+                sessionStorage.setItem('usuarioNombre', esAdmin ? 'Administrador' : nombre);
                 window.location = 'admin.html';
             } else {
                 ERROR.style.display = 'block';

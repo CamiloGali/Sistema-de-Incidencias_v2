@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Incidentes</title>
+    <meta name="theme-color" content="#8c1625">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -115,6 +118,31 @@
 
         .export-btn:hover {
             background: #701122;
+        }
+
+        .alert-btn {
+            width: 100%;
+            min-width: 140px;
+            padding: 9px 10px;
+            border: none;
+            border-radius: 8px;
+            background: #d47b18;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .alert-btn:hover {
+            background: #b7650d;
+        }
+
+        .alert-status {
+            display: block;
+            margin-top: 6px;
+            color: #8c1625;
+            font-size: 0.78rem;
+            font-weight: 700;
         }
 
         .table-wrapper {
@@ -252,13 +280,18 @@
 <body>
     <script>
         // Protección simple: requiere login previo en admin-login.html
-        if (sessionStorage.getItem('adminAuth') !== 'true') {
+        const rolSesion = sessionStorage.getItem('usuarioRol')
+            || (sessionStorage.getItem('adminAuth') === 'true' ? 'admin' : '');
+        if (!['admin', 'intendente'].includes(rolSesion)) {
             window.location = 'admin-login.html';
         }
+        window.rolSesion = rolSesion;
+        window.nombreSesion = sessionStorage.getItem('usuarioNombre') || 'Administrador';
     </script>
     <header class="page-header">
         <h1>Panel de Incidentes</h1>
         <div style="display:flex;gap:12px;align-items:center">
+            <span id="userLabel" style="font-weight:700;"></span>
             <a href="index.html">Ir a reporte</a>
             <button id="logoutBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:white;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;">Cerrar sesión</button>
         </div>
@@ -305,10 +338,11 @@
                         <th>Evidencia</th>
                         <th>Estado</th>
                         <th>Responsable del módulo</th>
+                        <th id="alertHeader">Alerta</th>
                     </tr>
                 </thead>
                 <tbody id="incidentesBody">
-                    <tr class="empty-state"><td colspan="9">Aún no hay incidentes registrados.</td></tr>
+                    <tr class="empty-state"><td colspan="10">Aún no hay incidentes registrados.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -353,12 +387,16 @@
     </style>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
+        }
+
         const STORAGE_KEY = 'incidentes-reporte';
         const CHANNEL_NAME = 'incidentes-canal';
-        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-            ? 'http://localhost:3000'
-            : 'https://sistema-de-incidencias-v2.onrender.com';
+        const API_URL = window.location.origin;
         const STATUS_OPTIONS = ['En curso', 'Completado'];
+        const ES_ADMIN = window.rolSesion === 'admin';
+        const NOMBRE_USUARIO = window.nombreSesion;
         const RESPONSABLES_POR_MODULO = {
                 'Modulo 1': ['Hermelinda', 'Maika'],
                 'Modulo 2': ['Liliana', 'Diego'],
@@ -377,10 +415,18 @@
         const mesFiltro = document.getElementById('mesFiltro');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
         const printReport = document.getElementById('printReport');
+        const userLabel = document.getElementById('userLabel');
+        const alertHeader = document.getElementById('alertHeader');
+        let alertasConocidas = new Set();
         
         // Elementos del Modal
         const modal = document.getElementById('imageModal');
         const imgFull = document.getElementById('imgFull');
+
+        userLabel.textContent = ES_ADMIN ? 'Administrador' : `Intendente: ${NOMBRE_USUARIO}`;
+        if (!ES_ADMIN) {
+            alertHeader.remove();
+        }
 
         const bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
 
@@ -500,10 +546,13 @@
             return responsables[0] || 'Sin asignar';
         }
 
-        async function updateIncidenteField(index, field, value) {
+        async function updateIncidenteField(index, field, value, id) {
             const incidentes = await getIncidentes();
-            const item = incidentes[index];
+            const item = id
+                ? incidentes.find(incidente => String(incidente.id) === id)
+                : incidentes[index];
             if (!item) return;
+            const itemIndex = incidentes.indexOf(item);
 
             try {
                 const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
@@ -516,12 +565,60 @@
 
                 if (!response.ok) throw new Error('Error en API');
             } catch {
-                incidentes[index][field] = value;
+                incidentes[itemIndex][field] = value;
                 setIncidentes(incidentes);
             }
 
             await renderIncidentes();
             showToast(field === 'status' ? 'Estado actualizado' : 'Responsable asignado');
+        }
+
+        async function enviarAlerta(index, button) {
+            if (!ES_ADMIN) return;
+            const incidentes = await getIncidentes();
+            const item = button.dataset.id
+                ? incidentes.find(incidente => String(incidente.id) === button.dataset.id)
+                : incidentes[index];
+            if (!item) return;
+            const itemIndex = incidentes.indexOf(item);
+
+            const fila = button.closest('tr');
+            const responsable = fila.querySelector('.responsable-select').value;
+            if (!responsable || responsable === 'Sin asignar') {
+                showToast('Selecciona un responsable antes de enviar la alerta.');
+                return;
+            }
+
+            const mensaje = window.prompt(`Alerta para ${responsable}:`, item.alerta || 'Revisar el incidente asignado a tu módulo.');
+            if (mensaje === null || !mensaje.trim()) return;
+
+            const alerta = {
+                alerta: mensaje.trim(),
+                alertaResponsable: responsable,
+                alertaFecha: new Date().toISOString(),
+                alertaLeida: false
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(alerta)
+                });
+
+                if (!response.ok) throw new Error('Error en API');
+            } catch {
+                incidentes[itemIndex] = { ...incidentes[itemIndex], ...alerta };
+                setIncidentes(incidentes);
+            }
+
+            if (bc) {
+                bc.postMessage({ type: 'alerta-responsable', responsable });
+            }
+            await renderIncidentes();
+            showToast(`Alerta enviada a ${responsable}.`);
         }
 
         // Funciones para el Modal de Imágenes
@@ -596,19 +693,22 @@
 
         async function renderIncidentes() {
             const incidentesTodos = await getIncidentes();
-            const incidentes = getIncidentesFiltrados(incidentesTodos);
+            const incidentesVisibles = ES_ADMIN
+                ? incidentesTodos
+                : incidentesTodos.filter(item => getResponsableActual(item) === NOMBRE_USUARIO);
+            const incidentes = getIncidentesFiltrados(incidentesVisibles);
 
-            totalIncidentes.textContent = incidentesTodos.length;
-            incidentesCompletados.textContent = incidentesTodos.filter(item => (item.status || 'En curso') === 'Completado').length;
+            totalIncidentes.textContent = incidentesVisibles.length;
+            incidentesCompletados.textContent = incidentesVisibles.filter(item => (item.status || 'En curso') === 'Completado').length;
             ultimosReportes.textContent = incidentes.slice(-5).length;
             fechaActual.textContent = incidentes.length ? formatDate(incidentes[incidentes.length - 1].fecha) : '-';
 
-            llenarOpcionesMeses(incidentesTodos);
+            llenarOpcionesMeses(incidentesVisibles);
             mesFiltro.value = mesFiltro.value || 'todos';
 
             incidentesBody.innerHTML = '';
             if (!incidentes.length) {
-                incidentesBody.innerHTML = '<tr class="empty-state"><td colspan="9">No hay incidentes para este mes.</td></tr>';
+                incidentesBody.innerHTML = `<tr class="empty-state"><td colspan="${ES_ADMIN ? 10 : 9}">No hay incidentes para este mes.</td></tr>`;
                 return;
             }
 
@@ -617,6 +717,9 @@
                 const status = item.status || 'En curso';
                 const responsableActual = getResponsableActual(item);
                 const responsables = getResponsablesModulo(item.edificio);
+                const alertaTexto = item.alerta
+                    ? `Alerta enviada a ${item.alertaResponsable || responsableActual}`
+                    : '';
 
                 const statusOptions = STATUS_OPTIONS.map(option => `
                     <option value="${option}" ${option === status ? 'selected' : ''}>${option}</option>
@@ -645,10 +748,16 @@
                         </select>
                     </td>
                     <td>
-                        <select class="responsable-select" data-index="${originalIndex}" data-field="responsable">
+                        <select class="responsable-select" data-index="${originalIndex}" data-id="${item.id || ''}" data-field="responsable" ${ES_ADMIN ? '' : 'disabled'}>
                             ${responsableOptions}
                         </select>
                     </td>
+                    ${ES_ADMIN ? `<td>
+                        <button type="button" class="alert-btn" data-index="${originalIndex}" data-id="${item.id || ''}">
+                            ${item.alerta ? 'Reenviar alerta' : 'Enviar alerta'}
+                        </button>
+                        ${alertaTexto ? `<span class="alert-status">${alertaTexto}</span>` : ''}
+                    </td>` : ''}
                 `;
                 incidentesBody.appendChild(row);
             });
@@ -667,10 +776,42 @@
             if (target.matches('.status-select') || target.matches('.responsable-select')) {
                 const index = Number(target.dataset.index);
                 const field = target.dataset.field;
-                const value = target.value;
-                updateIncidenteField(index, field, value);
+            const value = target.value;
+            updateIncidenteField(index, field, value, target.dataset.id);
             }
         });
+
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) return;
+
+            if (target.matches('.alert-btn')) {
+                enviarAlerta(Number(target.dataset.index), target);
+            }
+        });
+
+        async function revisarAlertasEnTiempoReal() {
+            const incidentes = await getIncidentes();
+            const alertasActuales = new Set(
+                incidentes
+                    .filter(item => item.alerta && item.alertaResponsable === NOMBRE_USUARIO)
+                    .map(item => `${item.id}:${item.alertaFecha || item.alerta}`)
+            );
+
+            if (!ES_ADMIN) {
+                const alertaNueva = incidentes.find(item => {
+                    const clave = `${item.id}:${item.alertaFecha || item.alerta}`;
+                    return item.alerta && item.alertaResponsable === NOMBRE_USUARIO && !alertasConocidas.has(clave);
+                });
+
+                if (alertaNueva && alertasConocidas.size > 0) {
+                    showToast(`Nueva alerta de ${alertaNueva.alertaResponsable}: ${alertaNueva.alerta}`);
+                }
+            }
+
+            alertasConocidas = alertasActuales;
+            await renderIncidentes();
+        }
 
         function handleExternalReport(event) {
             if (event.data && event.data.type === 'nuevo-reporte') {
@@ -692,9 +833,12 @@
         window.addEventListener('storage', handleStorageEvent);
 
         renderIncidentes();
+        setInterval(revisarAlertasEnTiempoReal, 3000);
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
             sessionStorage.removeItem('adminAuth');
+            sessionStorage.removeItem('usuarioRol');
+            sessionStorage.removeItem('usuarioNombre');
             window.location = 'index.html';
         });
     </script>

@@ -1,0 +1,19 @@
+{
+  "name": "Sistema de Incidencias",
+  "short_name": "Incidencias",
+  "description": "Sistema de reporte y seguimiento de incidencias",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f3f1",
+  "theme_color": "#8c1625",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
