@@ -69,13 +69,15 @@
             <option value="">Selecciona tu nombre</option>
             <option value="Hermelinda">Hermelinda</option>
             <option value="Maika">Maika</option>
-            <option value="Liliana">Liliana</option>
+            <option value="Liliana">Lili</option>
             <option value="Diego">Diego</option>
             <option value="Anita">Anita</option>
             <option value="Ricardo">Ricardo</option>
             <option value="Oscar">Oscar</option>
             <option value="Jesus">Jesus</option>
             <option value="Gabriela">Gabriela</option>
+            <option value="Gabriela">Cynthia</option>
+            <option value="Gabriela">Sotero</option>
         </select>
         <div id="error" class="error">Datos incorrectos</div>
         <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
@@ -94,7 +96,19 @@
         const INTENDENTE = document.getElementById('intendente');
 
         const ADMIN_PASSWORD = 'sub_admin';
-        const INTENDENTE_PASSWORD = 'intendente';
+         const INTENDENTE_PASSWORDS = {
+            Hermelinda: '15589',
+            Maika: '14893',
+            Lili: '14978',
+            Diego: '14083',
+            Anita: '6848',
+            Ricardo: '11424',
+            Oscar: '9112',
+            Cynthia:'16078',
+            Jesus: '5413',
+            Gabriela: '15805',
+            Sotero:'7868'
+        };
 
         TIPO_USUARIO.addEventListener('change', () => {
             const esIntendente = TIPO_USUARIO.value === 'intendente';
