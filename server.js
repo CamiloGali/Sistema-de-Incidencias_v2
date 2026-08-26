@@ -3,7 +3,12 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { Pool } = require('pg');
-const webpush = require('web-push');
+let webpush;
+try {
+  webpush = require('web-push');
+} catch {
+  webpush = null;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +18,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
-const pushConfigured = Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
+const pushConfigured = Boolean(
+  webpush && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY
+);
 if (pushConfigured) {
   webpush.setVapidDetails(
     process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
