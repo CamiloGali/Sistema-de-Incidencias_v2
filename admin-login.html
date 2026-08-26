@@ -96,7 +96,7 @@
         const INTENDENTE = document.getElementById('intendente');
 
         const ADMIN_PASSWORD = 'sub_admin';
-         const INTENDENTE_PASSWORDS = {
+        const INTENDENTE_PASSWORDS = {
             Hermelinda: '15589',
             Maika: '14893',
             Lili: '14978',
@@ -123,7 +123,7 @@
             const nombre = INTENDENTE.value;
             const accesoValido = esAdmin
                 ? v === ADMIN_PASSWORD
-                : Boolean(nombre) && v === INTENDENTE_PASSWORD;
+                : Boolean(nombre) && v === INTENDENTE_PASSWORDS[nombre];
 
             if (accesoValido) {
                 sessionStorage.setItem('adminAuth', esAdmin ? 'true' : 'false');
