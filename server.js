@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { Pool } = require('pg');
+const webpush = require('web-push');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,14 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
+const pushConfigured = Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
+if (pushConfigured) {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
+    process.env.VAPID_PUBLIC_KEY||'BI0_DpacibYI90u-HIRP76T0A9qNtuDSM-cvpRQUc4suef2Zbz6_HJueJze8UR3hrgPOy2DzpNqCn8MIn2kNrjo',
+    process.env.VAPID_PRIVATE_KEY||'G19FOldn4y0pG3lFDsbQ8qqGMhYHQS3URFtzlxdseeU'
+  );
+}
 
 fs.mkdirSync(dataDir, { recursive: true });
 
@@ -51,6 +60,15 @@ async function inicializarBaseDeDatos() {
     )
   `);
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      endpoint TEXT PRIMARY KEY,
+      responsable TEXT NOT NULL,
+      subscription JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
   const legacyIncidentes = leerIncidentesLegacy();
   if (legacyIncidentes.length) {
     const { rows } = await pool.query('SELECT COUNT(*)::int AS total FROM incidentes');
@@ -61,6 +79,27 @@ async function inicializarBaseDeDatos() {
       console.log(`Se migraron ${legacyIncidentes.length} incidentes desde el archivo JSON.`);
     }
   }
+}
+
+async function enviarNotificacionPush(responsable, payload) {
+  if (!pushConfigured) return;
+
+  const { rows } = await pool.query(
+    'SELECT endpoint, subscription FROM push_subscriptions WHERE responsable = $1',
+    [responsable]
+  );
+
+  await Promise.all(rows.map(async ({ endpoint, subscription }) => {
+    try {
+      await webpush.sendNotification(subscription, JSON.stringify(payload));
+    } catch (error) {
+      if (error.statusCode === 404 || error.statusCode === 410) {
+        await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [endpoint]);
+      } else {
+        console.error(`Error al enviar push a ${responsable}:`, error.message);
+      }
+    }
+  }));
 }
 
 async function listarIncidentes() {
@@ -106,6 +145,38 @@ async function guardarIncidente(incidente) {
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+app.get('/api/push/public-key', (req, res) => {
+  if (!pushConfigured) {
+    return res.status(503).json({ error: 'Web Push no está configurado en el servidor' });
+  }
+  res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+});
+
+app.post('/api/push/subscriptions', async (req, res) => {
+  const { responsable, subscription } = req.body;
+  if (!pushConfigured) {
+    return res.status(503).json({ error: 'Web Push no está configurado en el servidor' });
+  }
+  if (!responsable || !subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
+    return res.status(400).json({ error: 'Suscripción inválida' });
+  }
+
+  try {
+    await pool.query(`
+      INSERT INTO push_subscriptions (endpoint, responsable, subscription, updated_at)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (endpoint) DO UPDATE SET
+        responsable = EXCLUDED.responsable,
+        subscription = EXCLUDED.subscription,
+        updated_at = NOW()
+    `, [subscription.endpoint, responsable, subscription]);
+    res.status(201).json({ message: 'Notificaciones activadas' });
+  } catch (error) {
+    console.error('Error al registrar suscripción push:', error.message);
+    res.status(500).json({ error: 'No se pudo registrar la suscripción' });
+  }
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -199,6 +270,15 @@ app.patch('/api/incidentes/:id', async (req, res) => {
 
     if (!result.rowCount) {
       return res.status(404).json({ error: 'Incidente no encontrado' });
+    }
+
+    if (req.body.alerta && req.body.alertaResponsable) {
+      await enviarNotificacionPush(req.body.alertaResponsable, {
+        title: 'Nueva alerta de incidencia',
+        body: req.body.alerta,
+        incidenteId: id,
+        responsable: req.body.alertaResponsable
+      });
     }
 
     res.json({ message: 'Incidente actualizado correctamente' });

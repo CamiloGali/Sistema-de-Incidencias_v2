@@ -1,4 +1,4 @@
-const CACHE_NAME = 'incidencias-v1';
+const CACHE_NAME = 'incidencias-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -22,6 +22,31 @@ self.addEventListener('activate', event => {
     ))
   );
   self.clients.claim();
+});
+
+self.addEventListener('push', event => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : 'Tienes una nueva alerta.' };
+  }
+
+  event.waitUntil(self.registration.showNotification(data.title || 'Sistema de incidencias', {
+    body: data.body || 'Tienes una nueva alerta.',
+    icon: '/icon.svg',
+    badge: '/icon.svg',
+    data: { url: '/admin.html', incidenteId: data.incidenteId }
+  }));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+    const client = clientList.find(item => 'focus' in item);
+    if (client) return client.focus();
+    return clients.openWindow(event.notification.data?.url || '/admin.html');
+  }));
 });
 
 self.addEventListener('fetch', event => {
