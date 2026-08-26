@@ -686,8 +686,12 @@
             }
         });
 
-        function buildPrintableReport() {
-            const incidentes = getIncidentesFiltrados();
+        async function buildPrintableReport() {
+            const incidentesTodos = await getIncidentes();
+            const incidentesVisibles = ES_ADMIN
+                ? incidentesTodos
+                : incidentesTodos.filter(item => getResponsableActual(item) === NOMBRE_USUARIO);
+            const incidentes = getIncidentesFiltrados(incidentesVisibles);
             const tituloFiltro = mesFiltro.value === 'todos' ? 'Todos los meses' : getNombreMes(mesFiltro.value);
 
             if (!incidentes.length) {
@@ -733,8 +737,8 @@
             `;
         }
 
-        function exportarPdfFiltrado() {
-            buildPrintableReport();
+        async function exportarPdfFiltrado() {
+            await buildPrintableReport();
             window.print();
         }
 
