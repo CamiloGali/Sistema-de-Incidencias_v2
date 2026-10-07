@@ -1,418 +1,130 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Incidentes</title>
+    <title>Panel de Incidentes | ESTi</title>
     <meta name="theme-color" content="#8c1625">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        institucional: {
+                            50: '#fdf2f4',
+                            100: '#fbe6e8',
+                            200: '#f7c2c7',
+                            300: '#f0919b',
+                            400: '#e5596b',
+                            500: '#c22237',
+                            600: '#8c1625',
+                            700: '#720e1c',
+                            800: '#5a0a15',
+                            900: '#42060e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ece9e7;
-            margin: 0;
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .page-header {
-            background: #8c1625;
-            color: white;
-            padding: 18px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .page-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .page-header a {
-            color: white;
-            text-decoration: none;
-            font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.4);
-            padding: 10px 16px;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.08);
-        }
-
-        .page-header a:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .container {
-            padding: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .status-card {
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 20px;
-            margin-bottom: 22px;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .status-card div {
-            flex: 1 1 220px;
-        }
-
-        .status-card span {
-            display: block;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #8c1625;
-        }
-
-        .status-card p {
-            margin: 6px 0 0;
-            color: #565050;
-        }
-
-        .filter-bar {
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 14px 18px;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .filter-bar label {
-            font-weight: 700;
-            color: #4a4445;
-        }
-
-        .filter-bar select {
-            min-width: 180px;
-            padding: 10px 12px;
-            border: 1px solid #d4c2c3;
-            border-radius: 8px;
-            background: #fff;
-            color: #333;
-        }
-
-        .export-btn {
-            margin-left: auto;
-            background: #8c1625;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .export-btn:hover {
-            background: #701122;
-        }
-
-        .alert-btn {
-            width: 100%;
-            min-width: 140px;
-            padding: 9px 10px;
-            border: none;
-            border-radius: 8px;
-            background: #d47b18;
-            color: #ffffff;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .alert-btn:hover {
-            background: #b7650d;
-        }
-
-        .alert-status {
-            display: block;
-            margin-top: 6px;
-            color: #8c1625;
-            font-size: 0.78rem;
-            font-weight: 700;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 18px;
-        }
-
-        .status-select, .responsable-select {
-            width: 100%;
-            min-width: 160px;
-            padding: 9px 10px;
-            border: 1px solid #d4c2c3;
-            border-radius: 8px;
-            background: #fff;
-            color: #333;
-            font-size: 0.95rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1100px;
-        }
-
-        th, td {
-            padding: 14px 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
-
-        th {
-            background: #8c1625;
-            color: white;
-            font-weight: 700;
-        }
-
-        td {
-            color: #4a4445;
-        }
-
-        tbody tr:hover {
-            background: #fcf2f4;
-        }
-
-        .toast {
-            position: fixed;
-            right: 24px;
-            bottom: 24px;
-            background: #8c1625;
-            color: white;
-            padding: 16px 18px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-            display: none;
-            z-index: 10;
-        }
-
-        .toast.show {
-            display: block;
-        }
-
-        .empty-state {
-            padding: 30px;
-            text-align: center;
-            color: #5b5b5b;
-        }
-
-        /* Estilos para la evidencia en miniatura */
-        .evidencia-img {
-            max-width: 60px;
-            max-height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 1px solid #d4c2c3;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .evidencia-img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .no-evidencia {
-            color: #999;
-            font-size: 0.9em;
-            font-style: italic;
-        }
-
-        /* Modal para ver la imagen en grande */
+        /* Modales */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.8); 
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             justify-content: center;
             align-items: center;
+            padding: 16px;
         }
 
         .modal.show {
+            display: flex !important;
+        }
+
+        /* Toast flotante con microanimación */
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
             display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(15, 23, 42, 0.95);
+            color: #ffffff;
+            padding: 0.9rem 1.25rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transform: translateY(140%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            max-width: calc(100vw - 2rem);
         }
 
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
+        #toast::before {
+            content: '';
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%2334d399'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
-        .close-modal:hover {
-            color: #bbb;
+        /* Fila en estado pendiente */
+        tr.row-pendiente {
+            background-color: rgba(254, 243, 199, 0.35);
+            border-left: 4px solid #f59e0b;
         }
 
-        @media (max-width: 700px) {
-            .page-header {
-                align-items: stretch;
-                flex-direction: column;
-                padding: 16px;
-            }
-
-            .page-header > div {
-                flex-wrap: wrap;
-            }
-
-            .container {
-                padding: 14px 10px;
-            }
-
-            .status-card {
-                padding: 16px;
-                gap: 14px;
-            }
-
-            .filter-bar {
-                align-items: stretch;
-                padding: 12px;
-            }
-
-            .filter-bar select,
-            .export-btn {
-                width: 100%;
-                min-width: 0;
-                margin-left: 0;
-            }
-
-            .table-wrapper {
-                padding: 10px;
-            }
-
-            .toast {
-                right: 10px;
-                bottom: 10px;
-                left: 10px;
-            }
+        tr.row-pendiente:hover {
+            background-color: rgba(254, 243, 199, 0.55);
         }
-    </style>
-</head>
-<body>
-    <script>
-        // Protección simple: requiere login previo en admin-login.html
-        const rolSesion = sessionStorage.getItem('usuarioRol')
-            || (sessionStorage.getItem('adminAuth') === 'true' ? 'admin' : '');
-        if (!['admin', 'intendente'].includes(rolSesion)) {
-            window.location = 'admin-login.html';
-        }
-        window.rolSesion = rolSesion;
-        window.nombreSesion = sessionStorage.getItem('usuarioNombre') || 'Administrador';
-    </script>
-    <header class="page-header">
-        <h1>Panel de Incidentes</h1>
-        <div style="display:flex;gap:12px;align-items:center">
-            <span id="userLabel" style="font-weight:700;"></span>
-            <button id="pushBtn" type="button" style="display:none;background:#d47b18;border:1px solid rgba(255,255,255,0.35);color:white;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;">Activar notificaciones</button>
-            <a href="index.html">Ir a reporte</a>
-            <button id="logoutBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:white;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;">Cerrar sesión</button>
-        </div>
-    </header>
 
-    <main class="container">
-        <div class="status-card">
-            <div>
-                <span id="totalIncidentes">0</span>
-                <p>Total de reportes</p>
-            </div>
-            <div>
-                <span id="incidentesCompletados">0</span>
-                <p>Reportes completados</p>
-            </div>
-            <div>
-                <span id="ultimosReportes">0</span>
-                <p>Reportes recientes</p>
-            </div>
-            <div>
-                <span id="fechaActual">-</span>
-                <p>Última actualización</p>
-            </div>
-        </div>
-
-        <div class="filter-bar">
-            <label for="mesFiltro">Filtrar por mes:</label>
-            <select id="mesFiltro">
-                <option value="todos">Todos los meses</option>
-            </select>
-            <button type="button" class="export-btn" id="exportPdfBtn">Descargar PDF</button>
-        </div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Edificio</th>
-                        <th>Ubicación</th>
-                        <th>Descripción</th>
-                        <th>Evidencia</th>
-                        <th>Estado</th>
-                        <th>Responsable del módulo</th>
-                        <th id="alertHeader">Alerta</th>
-                    </tr>
-                </thead>
-                <tbody id="incidentesBody">
-                    <tr class="empty-state"><td colspan="10">Aún no hay incidentes registrados.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <div id="toast" class="toast"></div>
-
-    <div id="printReport" style="display:none;"></div>
-
-    <!-- Modal para visulizar las imagenes a pantalla completa -->
-    <div id="imageModal" class="modal">
-        <span class="close-modal" onclick="cerrarModal()">&times;</span>
-        <img class="modal-content" id="imgFull">
-    </div>
-
-    <style>
+        /* Impresión PDF */
         @media print {
             body * {
                 visibility: hidden;
             }
 
-            #printReport, #printReport * {
+            #printReport,
+            #printReport * {
                 visibility: visible;
             }
 
@@ -433,7 +145,653 @@
             }
         }
     </style>
+</head>
 
+<body
+    class="min-h-screen font-sans bg-slate-900 text-slate-800 relative selection:bg-institucional-600 selection:text-white flex flex-col justify-between">
+    <!-- Protección simple: requiere autenticación -->
+    <script>
+        const rolSesion = sessionStorage.getItem('usuarioRol')
+            || (sessionStorage.getItem('adminAuth') === 'true' ? 'admin' : '');
+        if (!['admin', 'intendente'].includes(rolSesion)) {
+            window.location = 'admin-login.html';
+        }
+        window.rolSesion = rolSesion;
+        window.nombreSesion = sessionStorage.getItem('usuarioNombre') || 'Administrador';
+    </script>
+
+    <!-- Fondo institucional decorativo con overlay -->
+    <div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat filter brightness-90"
+        style="background-image: url('fondo_b.png');"></div>
+    <div
+        class="fixed inset-0 z-0 bg-gradient-to-tr from-slate-950/85 via-slate-900/70 to-institucional-950/80 backdrop-blur-[2px]">
+    </div>
+
+    <!-- Barra de Navegación / Header Principal -->
+    <header
+        class="w-full bg-gradient-to-r from-institucional-900 via-institucional-700 to-institucional-800 text-white shadow-xl sticky top-0 z-40 border-b border-white/10 backdrop-blur-md">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+
+            <!-- Logotipo y Datos de Sesión -->
+            <div class="flex items-center gap-3.5 w-full sm:w-auto justify-between sm:justify-start">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-inner flex-shrink-0">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white leading-tight">Panel de
+                            Incidentes ESTi</h1>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span
+                                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-white/15 text-white border border-white/20 shadow-xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span id="userLabel">Cargando...</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Activar Notificaciones (Móvil) -->
+                <button id="pushBtnMobile" type="button" onclick="document.getElementById('pushBtn').click()"
+                    class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-md shadow-amber-500/20 transition-all cursor-pointer">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Acciones y Navegación Derecha -->
+            <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end flex-wrap">
+                <!-- Botón de notificaciones push para intendentes -->
+                <button id="pushBtn" type="button"
+                    class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-md shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Activar notificaciones</span>
+                </button>
+
+                <!-- Ir a formulario público -->
+                <a href="index.html"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-sm">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    <span>Ir a reporte</span>
+                </a>
+
+                <!-- Cerrar Sesión -->
+                <button id="logoutBtn" type="button"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-100 hover:text-white text-xs font-bold border border-rose-400/30 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Cerrar sesión</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal del Dashboard -->
+    <main class="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 relative z-10 my-auto">
+
+        <!-- Banner de Bienvenida y Contexto de Rol -->
+        <div id="rolBanner"
+            class="mb-5 p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-md flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-9 h-9 rounded-xl bg-institucional-50 text-institucional-700 flex items-center justify-center font-bold text-sm shadow-xs border border-institucional-200">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div>
+                    <span id="bannerRolTitulo" class="block text-sm font-extrabold text-slate-800">Vista de Gestión y
+                        Seguimiento</span>
+                    <span id="bannerRolDesc" class="block text-xs text-slate-500 font-medium">Control en tiempo real de
+                        anomalías e incidencias reportadas.</span>
+                </div>
+            </div>
+            <div
+                class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-semibold">
+                <svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Sincronización en vivo</span>
+            </div>
+        </div>
+
+        <!-- Tarjetas de Métricas (KPIs del Dashboard) -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 mb-6">
+
+            <!-- Total de Reportes -->
+            <div
+                class="bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Reportes</span>
+                    <div
+                        class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-institucional-50 group-hover:text-institucional-600 transition-colors">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="totalIncidentes"
+                        class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">0</span>
+                    <span class="text-[11px] text-slate-400 font-semibold">reportes</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 font-medium">Registrados en total</p>
+            </div>
+
+            <!-- Completados -->
+            <div
+                class="bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Completados</span>
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="incidentesCompletados"
+                        class="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight">0</span>
+                    <span class="text-[11px] text-emerald-600/70 font-semibold">resueltos</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 font-medium">Atendidos con éxito</p>
+            </div>
+
+            <!-- Pendientes -->
+            <div
+                class="bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-amber-200/80 bg-gradient-to-br from-white to-amber-50/30 shadow-md shadow-amber-500/5 hover:shadow-lg transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Pendientes</span>
+                    <div class="w-8 h-8 rounded-xl bg-amber-100/80 text-amber-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="incidentesPendientes"
+                        class="text-2xl sm:text-3xl font-black text-amber-600 tracking-tight">0</span>
+                    <span class="text-[11px] text-amber-600/70 font-semibold">en espera</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 font-medium">Con justificación técnica</p>
+            </div>
+
+            <!-- Recientes -->
+            <div
+                class="bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700">Recientes</span>
+                    <div class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 14 14"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="ultimosReportes"
+                        class="text-2xl sm:text-3xl font-black text-sky-600 tracking-tight">0</span>
+                    <span class="text-[11px] text-sky-600/70 font-semibold">últimos 5</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 font-medium">Actividad reciente</p>
+            </div>
+
+            <!-- Último Reporte Registrado -->
+            <div
+                class="col-span-2 sm:col-span-1 bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Última Fecha</span>
+                    <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                </div>
+                <div class="overflow-hidden">
+                    <span id="fechaActual"
+                        class="text-xs sm:text-sm font-extrabold text-slate-700 tracking-tight block truncate">-</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 font-medium">Fecha de último reporte</p>
+            </div>
+        </section>
+
+        <!-- Barra de Filtros y Herramientas -->
+        <div
+            class="bg-white/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md shadow-slate-200/40 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <svg class="w-4 h-4 text-institucional-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <label for="mesFiltro">Filtrar por mes:</label>
+                </div>
+                <div class="relative min-w-[200px]">
+                    <select id="mesFiltro"
+                        class="w-full h-11 pl-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                        <option value="todos">Todos los meses</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor de descarga (Exclusivo para Administrador) -->
+            <div id="exportContainer" class="hidden items-center gap-3">
+                <button type="button" id="exportPdfBtn"
+                    class="w-full sm:w-auto h-11 px-5 rounded-xl bg-gradient-to-r from-institucional-600 to-institucional-700 hover:from-institucional-700 hover:to-institucional-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-institucional-600/25 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Descargar Reporte PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenedor y Tabla de Incidentes -->
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[1200px]">
+                    <thead>
+                        <tr
+                            class="bg-slate-100/90 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+                            <th class="py-3.5 px-4">Fecha</th>
+                            <th class="py-3.5 px-4">Nombre</th>
+                            <th class="py-3.5 px-4">Tipo</th>
+                            <th class="py-3.5 px-4">Módulo / Edificio</th>
+                            <th class="py-3.5 px-4">Ubicación</th>
+                            <th class="py-3.5 px-4">Descripción</th>
+                            <th class="py-3.5 px-4">Evidencia</th>
+                            <th class="py-3.5 px-4">Estado</th>
+                            <th class="py-3.5 px-4 col-motivo">Motivo de Pendiente</th>
+                            <th class="py-3.5 px-4">Responsable</th>
+                            <th id="alertHeader" class="py-3.5 px-4">Alerta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidentesBody" class="divide-y divide-slate-100 text-sm">
+                        <tr class="empty-state">
+                            <td colspan="11" class="py-12 text-center text-slate-500 font-medium">Aún no hay incidentes
+                                registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast de Notificaciones -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Contenedor Oculto para Generación de Reporte Impreso -->
+    <div id="printReport" style="display:none;"></div>
+
+    <!-- Modal para visualizar imágenes a pantalla completa -->
+    <div id="imageModal"
+        class="modal fixed inset-0 z-50 p-4 bg-slate-950/80 backdrop-blur-md justify-center items-center">
+        <button type="button"
+            class="close-modal absolute top-5 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+            onclick="cerrarModal()">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <img class="modal-content max-w-[92vw] max-h-[88vh] rounded-2xl shadow-2xl border border-white/20 object-contain"
+            id="imgFull" alt="Evidencia en tamaño completo">
+    </div>
+
+    <!-- Modal Profesional para Motivo de Reporte Pendiente -->
+    <div id="motivoModal"
+        class="modal fixed inset-0 z-50 p-4 bg-slate-950/70 backdrop-blur-md justify-center items-center transition-all duration-200"
+        role="dialog" aria-modal="true" aria-labelledby="motivoModalTitulo">
+        <div
+            class="motivo-modal-card w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden transform transition-all duration-200 flex flex-col scale-100">
+            <!-- Modal Header con gradiente institucional -->
+            <div
+                class="bg-gradient-to-r from-institucional-800 via-institucional-600 to-institucional-700 text-white px-6 py-5 flex items-center justify-between shadow-md">
+                <div class="flex items-center gap-3.5">
+                    <div
+                        class="w-11 h-11 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-md flex items-center justify-center text-amber-300 shadow-inner flex-shrink-0">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="motivoModalTitulo" class="text-lg font-bold text-white tracking-tight leading-snug">
+                            Estado Pendiente</h3>
+                        <p id="motivoModalSub" class="text-xs text-rose-100/90 font-medium mt-0.5">Justificación del
+                            aplazamiento de la incidencia</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+                    onclick="cerrarMotivoModal()" aria-label="Cerrar modal" title="Cerrar">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 bg-white space-y-4">
+                <!-- Banner contextual del incidente seleccionado -->
+                <div
+                    class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 border-l-4 border-l-institucional-600 flex flex-col gap-1 shadow-sm">
+                    <span
+                        class="text-[10px] font-extrabold uppercase tracking-wider text-institucional-700 flex items-center gap-1.5">
+                        <svg class="w-3 h-3 text-institucional-600" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Incidencia seleccionada
+                    </span>
+                    <span id="motivoContextUbicacion" class="text-sm font-bold text-slate-800 leading-snug">Módulo /
+                        Ubicación</span>
+                    <span id="motivoContextDesc" class="text-xs text-slate-600 italic line-clamp-2">Descripción del
+                        incidente...</span>
+                </div>
+
+                <!-- Campo y Sugerencias -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide" for="motivoInput">
+                            Motivo o justificación técnica:
+                        </label>
+                        <span
+                            class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">*
+                            Requerido</span>
+                    </div>
+
+                    <!-- Chips de sugerencias rápidas -->
+                    <div class="mb-3">
+                        <span
+                            class="block text-[11px] font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Sugerencias
+                            rápidas:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button"
+                                class="motivo-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 text-slate-700 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="Falta de refacción / material para completar la reparación.">📦 Falta
+                                refacción / material</button>
+                            <button type="button"
+                                class="motivo-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 text-slate-700 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="A la espera de autorización o compra de insumos.">📋 Esperando
+                                autorización</button>
+                            <button type="button"
+                                class="motivo-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 text-slate-700 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="Se requiere apoyo de técnico especializado o externo.">🔧 Requiere apoyo
+                                externo</button>
+                            <button type="button"
+                                class="motivo-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 text-slate-700 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="Área ocupada o sin acceso temporal para laborar.">🚫 Sin acceso
+                                temporal</button>
+                            <button type="button"
+                                class="motivo-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 text-slate-700 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="Trabajo en proceso, se concluirá en el siguiente turno.">⏳ Turno
+                                siguiente</button>
+                        </div>
+                    </div>
+
+                    <!-- Textarea con contador -->
+                    <div class="relative">
+                        <textarea id="motivoInput" maxlength="500"
+                            placeholder="Escribe detalladamente por qué no se ha concluido el trabajo y qué se necesita para finalizarlo..."
+                            rows="4"
+                            class="w-full p-3.5 text-sm rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all resize-y font-normal leading-relaxed"></textarea>
+                        <div class="flex justify-end mt-1">
+                            <span id="charCounter" class="text-[11px] font-mono text-slate-400 font-medium">0 /
+                                500</span>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de error -->
+                    <div id="motivoError"
+                        class="hidden mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Por favor ingresa un motivo descriptivo para registrar el estado pendiente.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50/90 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button type="button"
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    onclick="cerrarMotivoModal()">
+                    Cancelar
+                </button>
+                <button type="button" id="btnConfirmarMotivo"
+                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-institucional-600 to-institucional-700 hover:from-institucional-700 hover:to-institucional-800 text-white text-xs font-bold shadow-lg shadow-institucional-600/25 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Guardar y registrar motivo</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Profesional para Enviar Alerta a Intendente -->
+    <div id="alertaModal"
+        class="modal fixed inset-0 z-50 p-4 bg-slate-950/70 backdrop-blur-md justify-center items-center transition-all duration-200"
+        role="dialog" aria-modal="true" aria-labelledby="alertaModalTitulo">
+        <div
+            class="motivo-modal-card w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden transform transition-all duration-200 flex flex-col scale-100">
+            <!-- Modal Header con gradiente de alerta (Ámbar a Borgoña institucional) -->
+            <div
+                class="bg-gradient-to-r from-amber-600 via-amber-700 to-institucional-700 text-white px-6 py-5 flex items-center justify-between shadow-md">
+                <div class="flex items-center gap-3.5">
+                    <div
+                        class="w-11 h-11 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-md flex items-center justify-center text-amber-200 shadow-inner flex-shrink-0">
+                        <svg class="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="alertaModalTitulo" class="text-lg font-bold text-white tracking-tight leading-snug">
+                            Enviar Alerta</h3>
+                        <p id="alertaModalSub" class="text-xs text-amber-100/90 font-medium mt-0.5">Notificación
+                            prioritaria al intendente responsable</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+                    onclick="cerrarAlertaModal()" aria-label="Cerrar modal" title="Cerrar">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 bg-white space-y-4">
+                <!-- Banner contextual del incidente y destinatario -->
+                <div
+                    class="p-4 rounded-2xl bg-gradient-to-br from-amber-50/90 to-orange-50/50 border border-amber-200/90 border-l-4 border-l-amber-500 flex flex-col gap-2 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span id="alertaDestinatarioAvatar"
+                                class="w-6 h-6 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
+                                I
+                            </span>
+                            <span class="text-xs text-slate-700 font-medium">
+                                Para: <strong id="alertaDestinatarioNombre"
+                                    class="text-slate-900 font-extrabold text-sm ml-0.5">Hermelinda</strong>
+                            </span>
+                        </div>
+                        <span id="alertaEstadoBadge"
+                            class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase tracking-wider">
+                            Nueva alerta
+                        </span>
+                    </div>
+
+                    <div class="pt-2 border-t border-amber-200/60 flex flex-col gap-0.5">
+                        <span
+                            class="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1">
+                            <svg class="w-3 h-3 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span id="alertaContextUbicacion">Módulo 1 • Ubicación</span>
+                        </span>
+                        <p id="alertaContextDesc" class="text-xs text-slate-600 italic line-clamp-2 pl-4">
+                            "Descripción del incidente..."
+                        </p>
+                    </div>
+
+                    <div id="alertaPreviaBox"
+                        class="hidden mt-1 p-2 rounded-xl bg-white/90 border border-amber-200/80 text-[11px] text-slate-600">
+                        <div class="flex items-center justify-between text-slate-500 font-semibold mb-0.5 text-[10px]">
+                            <span>⚠️ Alerta enviada anteriormente:</span>
+                            <span id="alertaPreviaFecha" class="font-normal text-slate-400"></span>
+                        </div>
+                        <p id="alertaPreviaTexto" class="italic text-slate-700 font-medium"></p>
+                    </div>
+                </div>
+
+                <!-- Campo y Sugerencias -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide" for="alertaInput">
+                            Mensaje de la alerta:
+                        </label>
+                        <span
+                            class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">*
+                            Requerido</span>
+                    </div>
+
+                    <!-- Chips de sugerencias rápidas -->
+                    <div class="mb-3">
+                        <span
+                            class="block text-[11px] font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Plantillas
+                            rápidas:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button"
+                                class="alerta-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="🚨 Revisión urgente requerida en el incidente asignado a tu módulo.">🚨
+                                Revisión urgente</button>
+                            <button type="button"
+                                class="alerta-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="🛠️ Favor de atender y dar seguimiento a este reporte a la brevedad.">🛠️
+                                Atender a la brevedad</button>
+                            <button type="button"
+                                class="alerta-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="📋 Se requiere informe del avance o estado actual de este reporte.">📋
+                                Solicitar informe</button>
+                            <button type="button"
+                                class="alerta-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="🧹 Apoyo prioritario para despejar y limpiar la zona señalada.">🧹 Limpieza
+                                prioritaria</button>
+                            <button type="button"
+                                class="alerta-chip px-2.5 py-1 text-xs font-medium rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-all shadow-xs active:scale-95 cursor-pointer"
+                                data-text="📦 Confirmar si ya se cuenta con las refacciones para terminar el trabajo.">📦
+                                Verificar refacciones</button>
+                        </div>
+                    </div>
+
+                    <!-- Textarea con contador -->
+                    <div class="relative">
+                        <textarea id="alertaInput" maxlength="300"
+                            placeholder="Escribe las indicaciones o mensaje de alerta para el responsable..." rows="3"
+                            class="w-full p-3.5 text-sm rounded-xl border border-slate-300 bg-slate-50/60 focus:bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-600 focus:ring-4 focus:ring-amber-500/15 transition-all resize-y font-normal leading-relaxed"></textarea>
+                        <div class="flex justify-end mt-1">
+                            <span id="alertaCharCounter" class="text-[11px] font-mono text-slate-400 font-medium">0 /
+                                300</span>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de error -->
+                    <div id="alertaError"
+                        class="hidden mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Por favor ingresa un mensaje para enviar la alerta al responsable.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50/90 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button type="button"
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    onclick="cerrarAlertaModal()">
+                    Cancelar
+                </button>
+                <button type="button" id="btnConfirmarAlerta"
+                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-700 to-institucional-600 hover:from-amber-700 hover:to-institucional-700 text-white text-xs font-bold shadow-lg shadow-amber-600/25 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    <span id="btnAlertaTexto">Enviar Alerta</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de Página Institucional -->
+    <footer
+        class="w-full max-w-7xl mx-auto my-4 py-3.5 px-6 rounded-2xl bg-white/80 backdrop-blur-md border border-white/50 shadow-lg text-center text-[11px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase relative z-10">
+        REALIZADO POR • GARCIA GALICIA DANIEL CAMILO • LICENCIATURA EN TECNOLOGÍAS DE LA
+        INFORMACIÓN
+    </footer>
+
+    <!-- Lógica del Dashboard -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
@@ -442,16 +800,16 @@
         const STORAGE_KEY = 'incidentes-reporte';
         const CHANNEL_NAME = 'incidentes-canal';
         const API_URL = window.location.origin;
-        const STATUS_OPTIONS = ['En curso', 'Completado','Baja', 'Pendiente', 'En revisión'];
+        const STATUS_OPTIONS = ['En curso', 'Completado', 'Baja', 'Pendiente', 'En revisión'];
         const ES_ADMIN = window.rolSesion === 'admin';
         const NOMBRE_USUARIO = window.nombreSesion;
         const RESPONSABLES_POR_MODULO = {
-                'Modulo 1': ['Hermelinda', 'Maika'],
-                'Modulo 2': ['Liliana', 'Diego'],
-                'Modulo 3': ['Anita', 'Ricardo'],
-                'Modulo 4': ['Oscar', 'Cynthia'],
-                'Modulo 5': ['Gabriela','Jesus'],
-                'Laboratorios':['Gabriela','Jesus']
+            'Modulo 1': ['Hermelinda', 'Maika', 'Sotero'],
+            'Modulo 2': ['Liliana', 'Diego', 'Sotero'],
+            'Modulo 3': ['Anita', 'Ricardo', 'Sotero'],
+            'Modulo 4': ['Oscar', 'Cynthia', 'Sotero'],
+            'Modulo 5': ['Gabriela', 'Jesus', 'Sotero'],
+            'Laboratorios': ['Gabriela', 'Jesus', 'Sotero']
         };
 
         const toast = document.getElementById('toast');
@@ -467,15 +825,27 @@
         const pushBtn = document.getElementById('pushBtn');
         const alertHeader = document.getElementById('alertHeader');
         let alertasConocidas = new Set();
-        
-        // Elementos del Modal
+
+        // Elementos del Modal de Imagen
         const modal = document.getElementById('imageModal');
         const imgFull = document.getElementById('imgFull');
 
+        // Configuración de vista según el rol del usuario
         userLabel.textContent = ES_ADMIN ? 'Administrador' : `Intendente: ${NOMBRE_USUARIO}`;
-        if (!ES_ADMIN) {
-            alertHeader.remove();
-            pushBtn.style.display = 'block';
+        const bannerRolTitulo = document.getElementById('bannerRolTitulo');
+        const bannerRolDesc = document.getElementById('bannerRolDesc');
+        const exportContainer = document.getElementById('exportContainer');
+
+        if (ES_ADMIN) {
+            bannerRolTitulo.textContent = 'Panel de Administración General';
+            bannerRolDesc.textContent = 'Gestión completa de todos los módulos, asignación de responsables y envío de alertas.';
+            if (exportContainer) exportContainer.classList.remove('hidden');
+        } else {
+            bannerRolTitulo.textContent = `Panel de Atención • ${NOMBRE_USUARIO}`;
+            bannerRolDesc.textContent = `Visualizando únicamente las incidencias asignadas a tu módulo de trabajo.`;
+            if (alertHeader) alertHeader.remove();
+            if (pushBtn) pushBtn.classList.remove('hidden');
+            if (exportContainer) exportContainer.remove();
         }
 
         const bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
@@ -513,14 +883,20 @@
                 body: JSON.stringify({ responsable: NOMBRE_USUARIO, subscription })
             });
             if (!response.ok) throw new Error('No se pudo registrar el dispositivo');
-            pushBtn.textContent = 'Notificaciones activadas';
+            pushBtn.innerHTML = `
+                <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Notificaciones activas</span>
+            `;
             pushBtn.disabled = true;
+            pushBtn.classList.add('opacity-80', 'cursor-default');
             showToast('Recibirás las alertas aunque cierres esta página.');
         }
 
-        pushBtn.addEventListener('click', () => {
-            activarNotificaciones().catch(() => showToast('No se pudieron activar las notificaciones.'));
-        });
+        if (pushBtn) {
+            pushBtn.addEventListener('click', () => {
+                activarNotificaciones().catch(() => showToast('No se pudieron activar las notificaciones.'));
+            });
+        }
 
         async function getIncidentes() {
             try {
@@ -563,7 +939,6 @@
             if (!mesFiltro || !mesFiltro.value || mesFiltro.value === 'todos') {
                 return incidentes;
             }
-
             return incidentes.filter(item => getMesKey(item.fecha) === mesFiltro.value);
         }
 
@@ -597,7 +972,7 @@
             clearTimeout(toast.hideTimeout);
             toast.hideTimeout = setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3500);
+            }, 3600);
         }
 
         function getEdificioDisplay(edificio) {
@@ -632,19 +1007,62 @@
             return RESPONSABLES_POR_MODULO[moduloKey] || ['Sin asignar'];
         }
 
+        function getTipoLugarDisplay(item) {
+            if (!item || !item.tipoLugar) return '-';
+            if (item.tipoLugar === 'Baño') {
+                const detalles = [];
+                if (item.genero) detalles.push(item.genero);
+                if (item.piso) detalles.push(item.piso);
+                return detalles.length ? `Baño (${detalles.join(' - ')})` : 'Baño';
+            }
+            return item.tipoLugar;
+        }
+
         function getResponsableActual(item) {
-            if (item.responsable) return item.responsable;
+            if (item.responsable && item.responsable !== 'Sin asignar') return item.responsable;
             const responsables = getResponsablesModulo(item.edificio);
             return responsables[0] || 'Sin asignar';
         }
 
-        async function updateIncidenteField(index, field, value, id) {
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getStatusBadgeStyle(status) {
+            switch (status) {
+                case 'Completado':
+                    return 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+                case 'Pendiente':
+                    return 'bg-amber-50 text-amber-900 border-amber-300 font-bold';
+                case 'Baja':
+                    return 'bg-rose-50 text-rose-800 border-rose-300 font-bold';
+                case 'En revisión':
+                    return 'bg-purple-50 text-purple-800 border-purple-300 font-bold';
+                default: // En curso
+                    return 'bg-sky-50 text-sky-800 border-sky-300 font-bold';
+            }
+        }
+
+        async function updateIncidenteFields(index, updates, id) {
             const incidentes = await getIncidentes();
             const item = id
-                ? incidentes.find(incidente => String(incidente.id) === id)
+                ? incidentes.find(incidente => String(incidente.id) === String(id))
                 : incidentes[index];
             if (!item) return;
             const itemIndex = incidentes.indexOf(item);
+
+            if (updates.edificio) {
+                const nuevosResponsables = getResponsablesModulo(updates.edificio);
+                const nuevoResponsable = nuevosResponsables[0] || 'Sin asignar';
+                updates.responsable = nuevoResponsable;
+                item.responsable = nuevoResponsable;
+            }
 
             try {
                 const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
@@ -652,17 +1070,25 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ [field]: value })
+                    body: JSON.stringify(updates)
                 });
 
                 if (!response.ok) throw new Error('Error en API');
             } catch {
-                incidentes[itemIndex][field] = value;
+                Object.assign(incidentes[itemIndex], updates);
                 setIncidentes(incidentes);
             }
 
+            if (bc) {
+                bc.postMessage({ type: 'nuevo-reporte' });
+            }
+
             await renderIncidentes();
-            showToast(field === 'status' ? 'Estado actualizado' : 'Responsable asignado');
+        }
+
+        async function updateIncidenteField(index, field, value, id) {
+            await updateIncidenteFields(index, { [field]: value }, id);
+            showToast(field === 'status' ? 'Estado actualizado' : field === 'edificio' ? 'Módulo actualizado' : 'Responsable asignado');
         }
 
         async function enviarAlerta(index, button) {
@@ -681,36 +1107,13 @@
                 return;
             }
 
-            const mensaje = window.prompt(`Alerta para ${responsable}:`, item.alerta || 'Revisar el incidente asignado a tu módulo.');
-            if (mensaje === null || !mensaje.trim()) return;
-
-            const alerta = {
-                alerta: mensaje.trim(),
-                alertaResponsable: responsable,
-                alertaFecha: new Date().toISOString(),
-                alertaLeida: false
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(alerta)
-                });
-
-                if (!response.ok) throw new Error('Error en API');
-            } catch {
-                incidentes[itemIndex] = { ...incidentes[itemIndex], ...alerta };
-                setIncidentes(incidentes);
-            }
-
-            if (bc) {
-                bc.postMessage({ type: 'alerta-responsable', responsable });
-            }
-            await renderIncidentes();
-            showToast(`Alerta enviada a ${responsable}.`);
+            abrirAlertaModal({
+                index,
+                item,
+                itemIndex,
+                responsable,
+                button
+            });
         }
 
         // Funciones para el Modal de Imágenes
@@ -724,12 +1127,316 @@
             imgFull.src = '';
         }
 
-        // Cierra el modal si se hace clic fuera de la imagen
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 cerrarModal();
             }
         });
+
+        // Funciones para el Modal de Motivo de Pendiente
+        let incidentePendienteActual = null;
+        const motivoModal = document.getElementById('motivoModal');
+        const motivoInput = document.getElementById('motivoInput');
+        const motivoError = document.getElementById('motivoError');
+        const motivoModalTitulo = document.getElementById('motivoModalTitulo');
+        const motivoModalSub = document.getElementById('motivoModalSub');
+        const motivoContextUbicacion = document.getElementById('motivoContextUbicacion');
+        const motivoContextDesc = document.getElementById('motivoContextDesc');
+        const charCounter = document.getElementById('charCounter');
+        const btnConfirmarMotivo = document.getElementById('btnConfirmarMotivo');
+
+        function updateCharCounter() {
+            if (charCounter && motivoInput) {
+                charCounter.textContent = `${motivoInput.value.length} / 500`;
+            }
+        }
+
+        if (motivoInput) {
+            motivoInput.addEventListener('input', () => {
+                updateCharCounter();
+                if (motivoInput.value.trim()) {
+                    motivoError.classList.add('hidden');
+                }
+            });
+        }
+
+        document.querySelectorAll('.motivo-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const text = chip.dataset.text || '';
+                if (motivoInput) {
+                    motivoInput.value = text;
+                    updateCharCounter();
+                    motivoError.classList.add('hidden');
+                    motivoInput.focus();
+                }
+            });
+        });
+
+        function abrirModalPendiente(datos) {
+            incidentePendienteActual = datos;
+            motivoInput.value = datos.motivoActual || '';
+            updateCharCounter();
+            motivoError.classList.add('hidden');
+
+            const item = datos.item;
+            if (item) {
+                const moduloStr = item.edificio ? getEdificioDisplay(item.edificio) : 'Sin módulo';
+                const ubicacionStr = item.ubicacion ? ` • ${item.ubicacion}` : '';
+                motivoContextUbicacion.textContent = `${moduloStr}${ubicacionStr}`;
+                motivoContextDesc.textContent = item.descripcion ? `"${item.descripcion}"` : 'Sin descripción adicional';
+            } else {
+                motivoContextUbicacion.textContent = 'Incidencia seleccionada';
+                motivoContextDesc.textContent = 'Detalles de la anomalía';
+            }
+
+            if (datos.esEdicion) {
+                motivoModalTitulo.textContent = 'Modificar Motivo de Pendiente';
+                motivoModalSub.textContent = 'Actualiza la justificación técnica de este reporte';
+            } else {
+                motivoModalTitulo.textContent = 'Estado Pendiente';
+                motivoModalSub.textContent = 'Justificación del aplazamiento de la incidencia';
+            }
+
+            motivoModal.classList.add('show');
+            setTimeout(() => {
+                motivoInput.focus();
+                motivoInput.select();
+            }, 100);
+        }
+
+        function cerrarMotivoModal() {
+            if (incidentePendienteActual && incidentePendienteActual.selectElement) {
+                incidentePendienteActual.selectElement.value = incidentePendienteActual.prevStatus;
+            }
+            cerrarModalSinRevertir();
+        }
+
+        function cerrarModalSinRevertir() {
+            incidentePendienteActual = null;
+            motivoModal.classList.remove('show');
+            motivoInput.value = '';
+            motivoError.classList.add('hidden');
+        }
+
+        async function confirmarMotivoPendiente() {
+            if (!incidentePendienteActual) return;
+
+            const motivo = motivoInput.value.trim();
+            if (!motivo) {
+                motivoError.classList.remove('hidden');
+                motivoInput.focus();
+                return;
+            }
+
+            const { id, index, selectElement } = incidentePendienteActual;
+            const updates = {
+                status: 'Pendiente',
+                motivoPendiente: motivo,
+                fechaPendiente: new Date().toISOString(),
+                autorPendiente: NOMBRE_USUARIO
+            };
+
+            if (selectElement) {
+                selectElement.dataset.prevValue = 'Pendiente';
+            }
+
+            cerrarModalSinRevertir();
+            await updateIncidenteFields(index, updates, id);
+            showToast('Estado cambiado a Pendiente y motivo registrado.');
+        }
+
+        btnConfirmarMotivo.addEventListener('click', confirmarMotivoPendiente);
+
+        motivoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                confirmarMotivoPendiente();
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && motivoModal && motivoModal.classList.contains('show')) {
+                cerrarMotivoModal();
+            }
+        });
+
+        motivoModal.addEventListener('click', (e) => {
+            if (e.target === motivoModal) {
+                cerrarMotivoModal();
+            }
+        });
+
+        // Funciones para el Modal de Alerta
+        let alertaModalActual = null;
+        const alertaModal = document.getElementById('alertaModal');
+        const alertaInput = document.getElementById('alertaInput');
+        const alertaError = document.getElementById('alertaError');
+        const alertaModalTitulo = document.getElementById('alertaModalTitulo');
+        const alertaModalSub = document.getElementById('alertaModalSub');
+        const alertaDestinatarioNombre = document.getElementById('alertaDestinatarioNombre');
+        const alertaDestinatarioAvatar = document.getElementById('alertaDestinatarioAvatar');
+        const alertaEstadoBadge = document.getElementById('alertaEstadoBadge');
+        const alertaContextUbicacion = document.getElementById('alertaContextUbicacion');
+        const alertaContextDesc = document.getElementById('alertaContextDesc');
+        const alertaPreviaBox = document.getElementById('alertaPreviaBox');
+        const alertaPreviaTexto = document.getElementById('alertaPreviaTexto');
+        const alertaPreviaFecha = document.getElementById('alertaPreviaFecha');
+        const alertaCharCounter = document.getElementById('alertaCharCounter');
+        const btnConfirmarAlerta = document.getElementById('btnConfirmarAlerta');
+        const btnAlertaTexto = document.getElementById('btnAlertaTexto');
+
+        function updateAlertaCharCounter() {
+            if (alertaCharCounter && alertaInput) {
+                alertaCharCounter.textContent = `${alertaInput.value.length} / 300`;
+            }
+        }
+
+        if (alertaInput) {
+            alertaInput.addEventListener('input', () => {
+                updateAlertaCharCounter();
+                if (alertaInput.value.trim()) {
+                    alertaError.classList.add('hidden');
+                }
+            });
+        }
+
+        document.querySelectorAll('.alerta-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const text = chip.dataset.text || '';
+                if (alertaInput) {
+                    alertaInput.value = text;
+                    updateAlertaCharCounter();
+                    alertaError.classList.add('hidden');
+                    alertaInput.focus();
+                }
+            });
+        });
+
+        function abrirAlertaModal(datos) {
+            alertaModalActual = datos;
+            const item = datos.item;
+            const responsable = datos.responsable;
+            const tieneAlertaPrevia = Boolean(item && item.alerta);
+
+            alertaDestinatarioNombre.textContent = responsable || 'Sin asignar';
+            const inicial = (responsable || 'I').trim().charAt(0).toUpperCase();
+            alertaDestinatarioAvatar.textContent = inicial;
+
+            if (item) {
+                const moduloStr = item.edificio ? getEdificioDisplay(item.edificio) : 'Sin módulo';
+                const ubicacionStr = item.ubicacion ? ` • ${item.ubicacion}` : '';
+                alertaContextUbicacion.textContent = `${moduloStr}${ubicacionStr}`;
+                alertaContextDesc.textContent = item.descripcion ? `"${item.descripcion}"` : 'Sin descripción adicional';
+            }
+
+            if (tieneAlertaPrevia) {
+                alertaModalTitulo.textContent = 'Reenviar Alerta';
+                alertaModalSub.textContent = `Actualizar mensaje de alerta para ${responsable}`;
+                alertaEstadoBadge.textContent = 'Reenvío';
+                alertaEstadoBadge.className = 'text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-900 border border-orange-200 uppercase tracking-wider';
+                btnAlertaTexto.textContent = 'Reenviar Alerta';
+
+                alertaPreviaBox.classList.remove('hidden');
+                alertaPreviaTexto.textContent = `"${item.alerta}"`;
+                alertaPreviaFecha.textContent = item.alertaFecha ? formatDate(item.alertaFecha) : '';
+
+                alertaInput.value = item.alerta || 'Revisar el incidente asignado a tu módulo.';
+            } else {
+                alertaModalTitulo.textContent = 'Enviar Alerta';
+                alertaModalSub.textContent = `Notificación prioritaria para ${responsable}`;
+                alertaEstadoBadge.textContent = 'Nueva alerta';
+                alertaEstadoBadge.className = 'text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 uppercase tracking-wider';
+                btnAlertaTexto.textContent = 'Enviar Alerta';
+
+                alertaPreviaBox.classList.add('hidden');
+                alertaInput.value = 'Revisar el incidente asignado a tu módulo lo antes posible.';
+            }
+
+            updateAlertaCharCounter();
+            alertaError.classList.add('hidden');
+            alertaModal.classList.add('show');
+
+            setTimeout(() => {
+                alertaInput.focus();
+                alertaInput.select();
+            }, 100);
+        }
+
+        function cerrarAlertaModal() {
+            alertaModalActual = null;
+            if (alertaModal) alertaModal.classList.remove('show');
+            if (alertaInput) alertaInput.value = '';
+            if (alertaError) alertaError.classList.add('hidden');
+        }
+
+        async function confirmarEnvioAlerta() {
+            if (!alertaModalActual) return;
+            const mensaje = alertaInput.value.trim();
+            if (!mensaje) {
+                alertaError.classList.remove('hidden');
+                alertaInput.focus();
+                return;
+            }
+
+            const { item, itemIndex, responsable } = alertaModalActual;
+            const alerta = {
+                alerta: mensaje,
+                alertaResponsable: responsable,
+                alertaFecha: new Date().toISOString(),
+                alertaLeida: false
+            };
+
+            cerrarAlertaModal();
+
+            try {
+                const response = await fetch(`${API_URL}/api/incidentes/${item.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(alerta)
+                });
+
+                if (!response.ok) throw new Error('Error en API');
+            } catch {
+                const incidentes = await getIncidentes();
+                incidentes[itemIndex] = { ...incidentes[itemIndex], ...alerta };
+                setIncidentes(incidentes);
+            }
+
+            if (bc) {
+                bc.postMessage({ type: 'alerta-responsable', responsable });
+            }
+            await renderIncidentes();
+            showToast(`Alerta enviada a ${responsable}.`);
+        }
+
+        if (btnConfirmarAlerta) {
+            btnConfirmarAlerta.addEventListener('click', confirmarEnvioAlerta);
+        }
+
+        if (alertaInput) {
+            alertaInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    confirmarEnvioAlerta();
+                }
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (alertaModal && alertaModal.classList.contains('show')) {
+                    cerrarAlertaModal();
+                }
+            }
+        });
+
+        if (alertaModal) {
+            alertaModal.addEventListener('click', (e) => {
+                if (e.target === alertaModal) {
+                    cerrarAlertaModal();
+                }
+            });
+        }
 
         async function buildPrintableReport() {
             const incidentesTodos = await getIncidentes();
@@ -741,28 +1448,36 @@
 
             if (!incidentes.length) {
                 printReport.innerHTML = `
-                    <h2>Reporte de incidentes</h2>
+                    <h2>Reporte de incidentes ESTi</h2>
                     <p>Filtro: ${tituloFiltro}</p>
-                    <p>No hay incidentes para este período.</p>
+                    <p>No hay incidentes registrados para este período.</p>
                 `;
                 return;
             }
 
-            const filas = incidentes.slice().reverse().map(item => `
+            const filas = incidentes.slice().reverse().map(item => {
+                const statusTexto = item.status || 'En curso';
+                const motivoTexto = (item.status === 'Pendiente' && item.motivoPendiente)
+                    ? `<div style="font-size:11px;color:#374151;background:#fef3c7;padding:5px 8px;border-radius:4px;border-left:3px solid #f59e0b;">"${escapeHtml(item.motivoPendiente)}"${item.autorPendiente ? `<br><span style="color:#92400e;font-size:10px;">Por: <b>${escapeHtml(item.autorPendiente)}</b></span>` : ''}</div>`
+                    : (item.status === 'Pendiente' ? '<span style="color:#b45309;font-size:11px;font-style:italic;">(Sin justificación)</span>' : '<span style="color:#9ca3af;">—</span>');
+
+                return `
                 <tr>
                     <td>${formatDate(item.fecha)}</td>
-                    <td>${item.nombre}</td>
-                    <td>${item.tipoLugar}</td>
+                    <td>${escapeHtml(item.nombre)}</td>
+                    <td>${getTipoLugarDisplay(item)}</td>
                     <td>${getEdificioDisplay(item.edificio)}</td>
-                    <td>${item.ubicacion}</td>
-                    <td>${item.descripcion}</td>
-                    <td>${item.status || 'En curso'}</td>
+                    <td>${escapeHtml(item.ubicacion)}</td>
+                    <td>${escapeHtml(item.descripcion)}</td>
+                    <td>${statusTexto}</td>
+                    <td>${motivoTexto}</td>
                     <td>${item.responsable || 'Sin asignar'}</td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
 
             printReport.innerHTML = `
-                <h2>Reporte de incidentes</h2>
+                <h2>Reporte General de Incidentes ESTi</h2>
                 <p><strong>Filtro:</strong> ${tituloFiltro}</p>
                 <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:12px;">
                     <thead>
@@ -770,10 +1485,11 @@
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Fecha</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Nombre</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Tipo</th>
-                            <th style="border:1px solid #444; padding:8px; text-align:left;">Edificio</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Módulo / Edificio</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Ubicación</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Descripción</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Estado</th>
+                            <th style="border:1px solid #444; padding:8px; text-align:left;">Motivo de Pendiente</th>
                             <th style="border:1px solid #444; padding:8px; text-align:left;">Responsable</th>
                         </tr>
                     </thead>
@@ -783,6 +1499,10 @@
         }
 
         async function exportarPdfFiltrado() {
+            if (!ES_ADMIN) {
+                showToast('Acceso restringido: Solo el Administrador puede descargar reportes.');
+                return;
+            }
             await buildPrintableReport();
             window.print();
         }
@@ -796,6 +1516,10 @@
 
             totalIncidentes.textContent = incidentesVisibles.length;
             incidentesCompletados.textContent = incidentesVisibles.filter(item => (item.status || 'En curso') === 'Completado').length;
+            const incidentesPendientes = document.getElementById('incidentesPendientes');
+            if (incidentesPendientes) {
+                incidentesPendientes.textContent = incidentesVisibles.filter(item => (item.status || 'En curso') === 'Pendiente').length;
+            }
             ultimosReportes.textContent = incidentes.slice(-5).length;
             fechaActual.textContent = incidentes.length ? formatDate(incidentes[incidentes.length - 1].fecha) : '-';
 
@@ -804,15 +1528,16 @@
 
             incidentesBody.innerHTML = '';
             if (!incidentes.length) {
-                incidentesBody.innerHTML = `<tr class="empty-state"><td colspan="${ES_ADMIN ? 10 : 9}">No hay incidentes para este mes.</td></tr>`;
+                incidentesBody.innerHTML = `<tr class="empty-state"><td colspan="${ES_ADMIN ? 11 : 10}" class="py-12 text-center text-slate-500 font-medium">No hay incidentes para este mes.</td></tr>`;
                 return;
             }
 
             incidentes.slice().reverse().forEach((item, reverseIndex) => {
                 const originalIndex = incidentes.length - 1 - reverseIndex;
                 const status = item.status || 'En curso';
-                const responsableActual = getResponsableActual(item);
+                const moduloKey = getModuloKey(item.edificio);
                 const responsables = getResponsablesModulo(item.edificio);
+                const responsableActual = getResponsableActual(item);
                 const alertaTexto = item.alerta
                     ? `Alerta enviada a ${item.alertaResponsable || responsableActual}`
                     : '';
@@ -821,38 +1546,130 @@
                     <option value="${option}" ${option === status ? 'selected' : ''}>${option}</option>
                 `).join('');
 
-                const responsableOptions = responsables.map(persona => `
+                let opcionesResponsables = [...responsables];
+                if (responsableActual && !opcionesResponsables.includes(responsableActual)) {
+                    opcionesResponsables.unshift(responsableActual);
+                }
+                if (!opcionesResponsables.includes('Sin asignar')) {
+                    opcionesResponsables.push('Sin asignar');
+                }
+
+                const responsableOptions = opcionesResponsables.map(persona => `
                     <option value="${persona}" ${persona === responsableActual ? 'selected' : ''}>${persona}</option>
                 `).join('');
 
                 const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50/80 transition-colors align-top';
+                if (status === 'Pendiente') {
+                    row.classList.add('row-pendiente');
+                }
+
                 const evidenciaHTML = item.evidencia
-                    ? `<img src="${item.evidencia}" class="evidencia-img" alt="Evidencia" onclick="abrirModal('${item.evidencia}')" title="Clic para ampliar">`
-                    : `<span class="no-evidencia">Sin imagen</span>`;
+                    ? `<img src="${item.evidencia}" class="evidencia-img w-11 h-11 object-cover rounded-xl shadow-xs border border-slate-200 cursor-pointer hover:scale-105 transition-transform" alt="Evidencia" onclick="abrirModal('${item.evidencia}')" title="Clic para ampliar">`
+                    : `<span class="text-xs text-slate-400 italic">Sin foto</span>`;
+
+                const edificiosDisponibles = ['Modulo 1', 'Modulo 2', 'Modulo 3', 'Modulo 4', 'Modulo 5', 'Laboratorios'];
+                const edificioHTML = ES_ADMIN ? `
+                    <select class="edificio-select h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-2 focus:ring-institucional-600/10 cursor-pointer" data-index="${originalIndex}" data-id="${item.id || ''}" data-field="edificio">
+                        <option value="" ${!moduloKey || moduloKey === 'Sin módulo' ? 'selected' : ''}>Selecciona módulo</option>
+                        ${edificiosDisponibles.map(ed => `
+                            <option value="${ed}" ${moduloKey === ed ? 'selected' : ''}>${getEdificioDisplay(ed)}</option>
+                        `).join('')}
+                    </select>
+                ` : `<span class="inline-flex px-2.5 py-1 rounded-lg bg-institucional-50 text-institucional-800 font-bold text-xs border border-institucional-200/60">${getEdificioDisplay(item.edificio)}</span>`;
+
+                let motivoHTML = '';
+                if (status === 'Pendiente' && item.motivoPendiente) {
+                    const inicial = (item.autorPendiente || 'I').trim().charAt(0).toUpperCase();
+                    motivoHTML = `
+                        <div class="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/90 border-l-4 border-l-amber-500 shadow-sm text-left transition-all hover:shadow-md motivo-card-pro" title="Motivo registrado de pendiente">
+                            <div class="flex items-center justify-between gap-1 mb-1.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100/90 text-amber-900 font-extrabold text-[10px] tracking-wider uppercase">
+                                    <svg class="w-3 h-3 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span>PENDIENTE</span>
+                                </span>
+                                <button type="button" class="btn-editar-pro inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 font-bold text-[10px] transition-all cursor-pointer shadow-xs" data-index="${originalIndex}" data-id="${item.id || ''}" title="Modificar justificación">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    <span>Editar</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-800 font-medium leading-relaxed bg-white/85 p-2 rounded-lg border border-amber-100/80 mb-2 italic break-words">
+                                "${escapeHtml(item.motivoPendiente)}"
+                            </p>
+                            <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-amber-200/50">
+                                <div class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                                    <span class="w-4 h-4 rounded-full bg-institucional-600 text-white font-bold text-[9px] flex items-center justify-center flex-shrink-0">${inicial}</span>
+                                    <span class="font-semibold text-slate-800 text-[11px]">${escapeHtml(item.autorPendiente || 'Intendente')}</span>
+                                </div>
+                                ${item.fechaPendiente ? `
+                                    <div class="inline-flex items-center gap-1 text-[10px] text-slate-500 font-normal" title="${new Date(item.fechaPendiente).toLocaleString('es-ES')}">
+                                        <svg class="w-3 h-3 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <span>${formatDate(item.fechaPendiente)}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (status === 'Pendiente' && !item.motivoPendiente) {
+                    motivoHTML = `
+                        <div class="p-2 rounded-xl bg-amber-50/60 border border-dashed border-amber-300 flex items-center justify-between gap-2 text-left motivo-card-pro motivo-card-empty">
+                            <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-800">
+                                <svg class="w-3.5 h-3.5 text-amber-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <span>Sin motivo registrado</span>
+                            </div>
+                            <button type="button" class="btn-editar-pro inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-[10px] transition-all cursor-pointer" data-index="${originalIndex}" data-id="${item.id || ''}">
+                                + Agregar motivo
+                            </button>
+                        </div>
+                    `;
+                }
+
+                const motivoCellHTML = status === 'Pendiente'
+                    ? motivoHTML
+                    : '<span class="text-slate-300 font-bold text-center block text-lg select-none" title="Aplica únicamente en estado Pendiente">—</span>';
 
                 row.innerHTML = `
-                    <td>${formatDate(item.fecha)}</td>
-                    <td>${item.nombre}</td>
-                    <td>${item.tipoLugar}</td>
-                    <td>${getEdificioDisplay(item.edificio)}</td>
-                    <td>${item.ubicacion}</td>
-                    <td>${item.descripcion}</td>
-                    <td>${evidenciaHTML}</td>
-                    <td>
-                        <select class="status-select" data-index="${originalIndex}" data-field="status">
+                    <td class="py-3.5 px-4 whitespace-nowrap text-xs font-semibold text-slate-600">${formatDate(item.fecha)}</td>
+                    <td class="py-3.5 px-4 text-xs font-bold text-slate-800">${escapeHtml(item.nombre)}</td>
+                    <td class="py-3.5 px-4 text-xs font-medium text-slate-700">
+                        <span class="px-2 py-1 rounded-md bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200/60">${getTipoLugarDisplay(item)}</span>
+                    </td>
+                    <td class="py-3.5 px-4">${edificioHTML}</td>
+                    <td class="py-3.5 px-4 text-xs font-medium text-slate-700 max-w-[170px] break-words">${escapeHtml(item.ubicacion)}</td>
+                    <td class="py-3.5 px-4 text-xs text-slate-600 max-w-[220px] leading-relaxed break-words">${escapeHtml(item.descripcion)}</td>
+                    <td class="py-3.5 px-4">${evidenciaHTML}</td>
+                    <td class="py-3.5 px-4">
+                        <select class="status-select h-9 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${getStatusBadgeStyle(status)}" data-index="${originalIndex}" data-id="${item.id || ''}" data-field="status" data-prev-value="${status}">
                             ${statusOptions}
                         </select>
                     </td>
-                    <td>
-                        <select class="responsable-select" data-index="${originalIndex}" data-id="${item.id || ''}" data-field="responsable" ${ES_ADMIN ? '' : 'disabled'}>
+                    <td class="py-3.5 px-4 col-motivo min-w-[220px]">
+                        ${motivoCellHTML}
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <select class="responsable-select h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-2 focus:ring-institucional-600/10 cursor-pointer ${ES_ADMIN ? '' : 'opacity-80 bg-slate-100 cursor-not-allowed'}" data-index="${originalIndex}" data-id="${item.id || ''}" data-field="responsable" ${ES_ADMIN ? '' : 'disabled'}>
                             ${responsableOptions}
                         </select>
                     </td>
-                    ${ES_ADMIN ? `<td>
-                        <button type="button" class="alert-btn" data-index="${originalIndex}" data-id="${item.id || ''}">
-                            ${item.alerta ? 'Reenviar alerta' : 'Enviar alerta'}
+                    ${ES_ADMIN ? `<td class="py-3.5 px-4 whitespace-nowrap">
+                        <button type="button" class="alert-btn px-3 py-1.5 rounded-xl font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer ${item.alerta ? 'bg-orange-50 text-orange-800 border border-orange-300 hover:bg-orange-100' : 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'}" data-index="${originalIndex}" data-id="${item.id || ''}">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <span>${item.alerta ? 'Reenviar alerta' : 'Enviar alerta'}</span>
                         </button>
-                        ${alertaTexto ? `<span class="alert-status">${alertaTexto}</span>` : ''}
+                        ${alertaTexto ? `<span class="alert-status block text-[10px] text-institucional-700 font-bold mt-1 max-w-[140px] truncate" title="${alertaTexto}">${alertaTexto}</span>` : ''}
                     </td>` : ''}
                 `;
                 incidentesBody.appendChild(row);
@@ -863,26 +1680,77 @@
             renderIncidentes();
         });
 
-        exportPdfBtn.addEventListener('click', exportarPdfFiltrado);
+        if (exportPdfBtn) {
+            exportPdfBtn.addEventListener('click', exportarPdfFiltrado);
+        }
 
-        document.addEventListener('change', (event) => {
+        document.addEventListener('change', async (event) => {
             const target = event.target;
             if (!(target instanceof HTMLElement)) return;
 
-            if (target.matches('.status-select') || target.matches('.responsable-select')) {
+            if (target.matches('.status-select')) {
+                const index = Number(target.dataset.index);
+                const id = target.dataset.id;
+                const newStatus = target.value;
+                const prevStatus = target.dataset.prevValue || 'En curso';
+
+                if (newStatus === 'Pendiente') {
+                    const incidentes = await getIncidentes();
+                    const item = id
+                        ? incidentes.find(incidente => String(incidente.id) === String(id))
+                        : incidentes[index];
+
+                    abrirModalPendiente({
+                        id: item ? item.id : id,
+                        index,
+                        item,
+                        selectElement: target,
+                        prevStatus,
+                        motivoActual: (item && item.motivoPendiente) || '',
+                        esEdicion: false
+                    });
+                    return;
+                }
+
+                target.dataset.prevValue = newStatus;
+                updateIncidenteField(index, 'status', newStatus, id);
+            } else if (target.matches('.responsable-select') || target.matches('.edificio-select')) {
                 const index = Number(target.dataset.index);
                 const field = target.dataset.field;
-            const value = target.value;
-            updateIncidenteField(index, field, value, target.dataset.id);
+                const value = target.value;
+                updateIncidenteField(index, field, value, target.dataset.id);
             }
         });
 
-        document.addEventListener('click', (event) => {
+        document.addEventListener('click', async (event) => {
             const target = event.target;
             if (!(target instanceof HTMLElement)) return;
 
-            if (target.matches('.alert-btn')) {
-                enviarAlerta(Number(target.dataset.index), target);
+            if (target.matches('.alert-btn') || target.closest('.alert-btn')) {
+                const btn = target.matches('.alert-btn') ? target : target.closest('.alert-btn');
+                enviarAlerta(Number(btn.dataset.index), btn);
+            } else if (target.closest('.btn-editar-pro')) {
+                const btn = target.closest('.btn-editar-pro');
+                const index = Number(btn.dataset.index);
+                const id = btn.dataset.id;
+                const incidentes = await getIncidentes();
+                const item = id
+                    ? incidentes.find(incidente => String(incidente.id) === String(id))
+                    : incidentes[index];
+                if (!item) return;
+
+                const row = btn.closest('tr');
+                const selectElement = row ? row.querySelector('.status-select') : null;
+
+                abrirModalPendiente({
+                    id: item.id,
+                    index,
+                    item,
+                    selectElement,
+                    prevStatus: 'Pendiente',
+                    motivoActual: item.motivoPendiente || '',
+                    esEdicion: true
+                });
             }
         });
 
@@ -939,4 +1807,5 @@
         });
     </script>
 </body>
+
 </html>

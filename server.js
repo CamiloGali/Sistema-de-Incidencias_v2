@@ -24,8 +24,8 @@ const pushConfigured = Boolean(
 if (pushConfigured) {
   webpush.setVapidDetails(
     process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
-    process.env.VAPID_PUBLIC_KEY||'BI0_DpacibYI90u-HIRP76T0A9qNtuDSM-cvpRQUc4suef2Zbz6_HJueJze8UR3hrgPOy2DzpNqCn8MIn2kNrjo',
-    process.env.VAPID_PRIVATE_KEY||'G19FOldn4y0pG3lFDsbQ8qqGMhYHQS3URFtzlxdseeU'
+    process.env.VAPID_PUBLIC_KEY || 'BI0_DpacibYI90u-HIRP76T0A9qNtuDSM-cvpRQUc4suef2Zbz6_HJueJze8UR3hrgPOy2DzpNqCn8MIn2kNrjo',
+    process.env.VAPID_PRIVATE_KEY || 'G19FOldn4y0pG3lFDsbQ8qqGMhYHQS3URFtzlxdseeU'
   );
 }
 
@@ -63,9 +63,22 @@ async function inicializarBaseDeDatos() {
       alerta TEXT,
       alerta_responsable TEXT,
       alerta_fecha TEXT,
-      alerta_leida BOOLEAN NOT NULL DEFAULT FALSE
+      alerta_leida BOOLEAN NOT NULL DEFAULT FALSE,
+      motivo_pendiente TEXT DEFAULT '',
+      fecha_pendiente TEXT DEFAULT '',
+      autor_pendiente TEXT DEFAULT ''
     )
   `);
+
+  try {
+    await pool.query(`
+      ALTER TABLE incidentes ADD COLUMN IF NOT EXISTS motivo_pendiente TEXT DEFAULT '';
+      ALTER TABLE incidentes ADD COLUMN IF NOT EXISTS fecha_pendiente TEXT DEFAULT '';
+      ALTER TABLE incidentes ADD COLUMN IF NOT EXISTS autor_pendiente TEXT DEFAULT '';
+    `);
+  } catch (err) {
+    console.error('Error al verificar columnas motivo_pendiente:', err.message);
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS push_subscriptions (
@@ -114,7 +127,10 @@ async function listarIncidentes() {
     SELECT id, fecha, nombre, tipo_lugar AS "tipoLugar", edificio, genero, piso,
            ubicacion, descripcion, evidencia, status, responsable, alerta,
            alerta_responsable AS "alertaResponsable", alerta_fecha AS "alertaFecha",
-           alerta_leida AS "alertaLeida"
+           alerta_leida AS "alertaLeida",
+           motivo_pendiente AS "motivoPendiente",
+           fecha_pendiente AS "fechaPendiente",
+           autor_pendiente AS "autorPendiente"
     FROM incidentes
     ORDER BY id ASC
   `);
@@ -126,8 +142,8 @@ async function guardarIncidente(incidente) {
     INSERT INTO incidentes (
       id, fecha, nombre, tipo_lugar, edificio, genero, piso, ubicacion,
       descripcion, evidencia, status, responsable, alerta, alerta_responsable,
-      alerta_fecha, alerta_leida
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      alerta_fecha, alerta_leida, motivo_pendiente, fecha_pendiente, autor_pendiente
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
     ON CONFLICT (id) DO NOTHING
   `, [
     incidente.id,
@@ -145,7 +161,10 @@ async function guardarIncidente(incidente) {
     incidente.alerta || null,
     incidente.alertaResponsable || null,
     incidente.alertaFecha || null,
-    Boolean(incidente.alertaLeida)
+    Boolean(incidente.alertaLeida),
+    incidente.motivoPendiente || '',
+    incidente.fechaPendiente || '',
+    incidente.autorPendiente || ''
   ]);
 }
 
@@ -220,7 +239,10 @@ app.post('/api/incidentes', async (req, res) => {
     descripcion,
     evidencia,
     status,
-    responsable
+    responsable,
+    motivoPendiente,
+    fechaPendiente,
+    autorPendiente
   } = req.body;
 
   if (!fecha || !nombre || !tipoLugar || !descripcion) {
@@ -239,7 +261,10 @@ app.post('/api/incidentes', async (req, res) => {
     descripcion,
     evidencia: evidencia || '',
     status: status || 'En curso',
-    responsable: responsable || 'Sin asignar'
+    responsable: responsable || 'Sin asignar',
+    motivoPendiente: motivoPendiente || '',
+    fechaPendiente: fechaPendiente || '',
+    autorPendiente: autorPendiente || ''
   };
 
   try {
@@ -257,7 +282,8 @@ app.patch('/api/incidentes/:id', async (req, res) => {
     fecha: 'fecha', nombre: 'nombre', tipoLugar: 'tipo_lugar', edificio: 'edificio',
     genero: 'genero', piso: 'piso', ubicacion: 'ubicacion', descripcion: 'descripcion',
     evidencia: 'evidencia', status: 'status', responsable: 'responsable', alerta: 'alerta',
-    alertaResponsable: 'alerta_responsable', alertaFecha: 'alerta_fecha', alertaLeida: 'alerta_leida'
+    alertaResponsable: 'alerta_responsable', alertaFecha: 'alerta_fecha', alertaLeida: 'alerta_leida',
+    motivoPendiente: 'motivo_pendiente', fechaPendiente: 'fecha_pendiente', autorPendiente: 'autor_pendiente'
   };
   const updates = Object.entries(req.body)
     .filter(([field]) => allowedFields[field])

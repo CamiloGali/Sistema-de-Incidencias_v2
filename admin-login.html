@@ -1,88 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Acceso al sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acceso al sistema | Control de Incidencias</title>
     <meta name="theme-color" content="#8c1625">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-image: url('fondo_b.png'); background-size: cover; margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:16px; }
-        .box { background:#fff; padding:28px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; max-width:100%; border:1px solid #d8d1d1; }
-        h2 { margin:0 0 8px 0; color:#8c1625; }
-        p { color:#5b5b5b; margin:0 0 18px 0; }
-        /* Alinear tamaño de input y botón */
-        input, button {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            height: 48px;
-            font-size: 1rem;
-            border-radius: 8px;
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        institucional: {
+                            50: '#fdf2f4',
+                            100: '#fbe6e8',
+                            200: '#f7c2c7',
+                            300: '#f0919b',
+                            400: '#e5596b',
+                            500: '#c22237',
+                            600: '#8c1625',
+                            700: '#720e1c',
+                            800: '#5a0a15',
+                            900: '#42060e'
+                        }
+                    }
+                }
+            }
         }
-        input {
-            border: 1px solid #d4c2c3;
-            margin-bottom: 12px;
-            background: #fff;
-        }
-
-        select {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            height: 48px;
-            margin-bottom: 12px;
-            border: 1px solid #d4c2c3;
-            border-radius: 8px;
-            background: #fff;
-            color: #333;
-            font-size: 1rem;
-        }
-        button {
-            background:#8c1625;
-            color:#fff;
-            border:none;
-            font-weight:700;
-            cursor:pointer;
-        }
-        .note { font-size:0.9rem; color:#6b6b6b; margin-top:12px; text-align:center; }
-        .error { color:#a41624; font-weight:700; margin-bottom:8px; display:none; }
-        .hidden { display:none; }
-        @media (max-width: 420px) {
-            .box { padding:22px 18px; }
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="box">
-        <h2 align="center">Acceso al sistema</h2>
-        <p>Selecciona tu tipo de usuario e introduce tus datos para consultar los reportes.</p>
-        <select id="tipoUsuario" aria-label="Tipo de usuario">
-            <option value="admin">Administrador</option>
-            <option value="intendente">Intendente</option>
-        </select>
-        <select id="intendente" class="hidden" aria-label="Nombre del intendente">
-            <option value="">Selecciona tu nombre</option>
-            <option value="Hermelinda">Hermelinda</option>
-            <option value="Maika">Maika</option>
-            <option value="Liliana">Lili</option>
-            <option value="Diego">Diego</option>
-            <option value="Anita">Anita</option>
-            <option value="Ricardo">Ricardo</option>
-            <option value="Oscar">Oscar</option>
-            <option value="Jesus">Jesus</option>
-            <option value="Gabriela">Gabriela</option>
-            <option value="Gabriela">Cynthia</option>
-            <option value="Gabriela">Sotero</option>
-        </select>
-        <div id="error" class="error">Datos incorrectos</div>
-        <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
-        <button id="btnLogin">Ingresar</button>
-    </div>
+
+<body class="min-h-screen font-sans bg-slate-900 flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-institucional-600 selection:text-white">
+    <!-- Fondo con overlay decorativo -->
+    <div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat filter brightness-90" style="background-image: url('fondo_b.png');"></div>
+    <div class="fixed inset-0 z-0 bg-gradient-to-tr from-slate-950/80 via-slate-900/60 to-institucional-950/70 backdrop-blur-[2px]"></div>
+
+    <!-- Contenedor principal de Login -->
+    <main class="w-full max-w-md relative z-10 my-auto">
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 p-7 sm:p-9 transition-all">
+            
+            <!-- Encabezado con logo / ícono institucional -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-institucional-700 to-institucional-500 text-white shadow-lg shadow-institucional-600/30 mb-3 ring-4 ring-institucional-100">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Acceso al Sistema</h1>
+                <p class="text-sm text-slate-500 mt-1 font-medium">Panel de Gestión y Control de Incidentes</p>
+            </div>
+
+            <!-- Selector de Rol (Segmented Control moderno) -->
+            <div class="mb-5">
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Selecciona tu perfil:</label>
+                <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200">
+                    <button type="button" id="tabAdmin" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-institucional-700 shadow-sm border border-slate-200/60">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5z"></path>
+                        </svg>
+                        <span>Administrador</span>
+                    </button>
+                    <button type="button" id="tabIntendente" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Intendente</span>
+                    </button>
+                </div>
+
+                <!-- Select oculto para mantener compatibilidad con scripts existentes -->
+                <select id="tipoUsuario" class="hidden" aria-label="Tipo de usuario">
+                    <option value="admin" selected>Administrador</option>
+                    <option value="intendente">Intendente</option>
+                </select>
+            </div>
+
+            <!-- Selector de Intendente (Condicional) -->
+            <div id="intendenteGroup" class="hidden mb-4">
+                <label for="intendente" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Nombre del intendente:</label>
+                <div class="relative">
+                    <select id="intendente" class="w-full h-12 pl-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                        <option value="">Selecciona tu nombre</option>
+                        <option value="Hermelinda">Hermelinda</option>
+                        <option value="Maika">Maika</option>
+                        <option value="Liliana">Liliana</option>
+                        <option value="Diego">Diego</option>
+                        <option value="Anita">Anita</option>
+                        <option value="Ricardo">Ricardo</option>
+                        <option value="Oscar">Oscar</option>
+                        <option value="Jesus">Jesus</option>
+                        <option value="Gabriela">Gabriela</option>
+                        <option value="Cynthia">Cynthia</option>
+                        <option value="Sotero">Sotero</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campo de Contraseña -->
+            <div class="mb-4">
+                <label for="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Contraseña de acceso:</label>
+                <div class="relative">
+                    <input id="password" type="password" placeholder="Contraseña de administrador" autocomplete="current-password"
+                        class="w-full h-12 pl-11 pr-12 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400" />
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors" title="Mostrar/ocultar contraseña">
+                        <svg id="eyeIcon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mensaje de Error -->
+            <div id="error" class="hidden mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center gap-2 animate-bounce">
+                <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Contraseña incorrecta o datos incompletos. Verifica tu información.</span>
+            </div>
+
+            <!-- Botón de Inicio de Sesión -->
+            <button id="btnLogin" class="w-full h-12 rounded-xl bg-gradient-to-r from-institucional-600 to-institucional-700 hover:from-institucional-700 hover:to-institucional-800 text-white font-bold text-sm shadow-lg shadow-institucional-600/30 hover:shadow-xl hover:shadow-institucional-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
+                <span>Ingresar al Panel</span>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <!-- Enlace para volver -->
+            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-institucional-600 transition-colors">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Volver al formulario de reporte</span>
+                </a>
+            </div>
+
+        </div>
+    </main>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -94,27 +179,56 @@
         const ERROR = document.getElementById('error');
         const TIPO_USUARIO = document.getElementById('tipoUsuario');
         const INTENDENTE = document.getElementById('intendente');
+        const INTENDENTE_GROUP = document.getElementById('intendenteGroup');
+        const TAB_ADMIN = document.getElementById('tabAdmin');
+        const TAB_INTENDENTE = document.getElementById('tabIntendente');
+        const TOGGLE_PASS_BTN = document.getElementById('togglePasswordBtn');
 
         const ADMIN_PASSWORD = 'sub_admin';
         const INTENDENTE_PASSWORDS = {
             Hermelinda: '15589',
             Maika: '14893',
+            Liliana: '14978',
             Lili: '14978',
             Diego: '14083',
             Anita: '6848',
             Ricardo: '11424',
             Oscar: '9112',
-            Cynthia:'16078',
+            Cynthia: '16078',
             Jesus: '5413',
             Gabriela: '15805',
-            Sotero:'7868'
+            Sotero: '7868'
         };
 
-        TIPO_USUARIO.addEventListener('change', () => {
-            const esIntendente = TIPO_USUARIO.value === 'intendente';
-            INTENDENTE.classList.toggle('hidden', !esIntendente);
-            PASS.placeholder = esIntendente ? 'Contraseña de intendente' : 'Contraseña de administrador';
-            ERROR.style.display = 'none';
+        function setRol(rol) {
+            const esIntendente = rol === 'intendente';
+            TIPO_USUARIO.value = rol;
+
+            // Actualizar estilo visual de los tabs
+            if (esIntendente) {
+                TAB_INTENDENTE.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-institucional-700 shadow-sm border border-slate-200/60';
+                TAB_ADMIN.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900';
+                INTENDENTE_GROUP.classList.remove('hidden');
+                PASS.placeholder = 'Contraseña de intendente';
+            } else {
+                TAB_ADMIN.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-institucional-700 shadow-sm border border-slate-200/60';
+                TAB_INTENDENTE.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900';
+                INTENDENTE_GROUP.classList.add('hidden');
+                PASS.placeholder = 'Contraseña de administrador';
+            }
+
+            ERROR.classList.add('hidden');
+            PASS.value = '';
+            PASS.focus();
+        }
+
+        TAB_ADMIN.addEventListener('click', () => setRol('admin'));
+        TAB_INTENDENTE.addEventListener('click', () => setRol('intendente'));
+
+        // Toggle para ver/ocultar contraseña
+        TOGGLE_PASS_BTN.addEventListener('click', () => {
+            const isPassword = PASS.type === 'password';
+            PASS.type = isPassword ? 'text' : 'password';
         });
 
         BTN.addEventListener('click', () => {
@@ -131,11 +245,14 @@
                 sessionStorage.setItem('usuarioNombre', esAdmin ? 'Administrador' : nombre);
                 window.location = 'admin.html';
             } else {
-                ERROR.style.display = 'block';
+                ERROR.classList.remove('hidden');
             }
         });
 
-        PASS.addEventListener('keydown', (e) => { if (e.key === 'Enter') BTN.click(); });
+        PASS.addEventListener('keydown', (e) => { 
+            if (e.key === 'Enter') BTN.click(); 
+        });
     </script>
 </body>
+
 </html>

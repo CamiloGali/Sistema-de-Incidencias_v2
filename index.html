@@ -1,343 +1,459 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Reporte de anomalías</title>
+    <title>Sistema de Reporte de Anomalías | ESTi</title>
+    <meta name="description"
+        content="Plataforma institucional para el reporte y atención oportuna de anomalías e incidencias en instalaciones escolares.">
     <meta name="theme-color" content="#8c1625">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        institucional: {
+                            50: '#fdf2f4',
+                            100: '#fbe6e8',
+                            200: '#f7c2c7',
+                            300: '#f0919b',
+                            400: '#e5596b',
+                            500: '#c22237',
+                            600: '#8c1625',
+                            700: '#720e1c',
+                            800: '#5a0a15',
+                            900: '#42060e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('fondo_b.png');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 24px;
-            margin: 0;
-            color: #333;
-        }
-
-        nav {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            background: #8c1625;
-            color: #ffffff;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        nav .brand {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 700px;
-            background: #ffffff;
-            padding: 0;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-            overflow: hidden;
-            border: 1px solid #d8d1d1;
-        }
-
-        .card-header {
-            background: #8c1625;
-            color: #ffffff;
-            padding: 22px 24px;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        h1 {
-            color: #333333;
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 1.5rem;
-        }
-
-        p {
-            color: #5b5b5b;
-            line-height: 1.6;
-            margin-top: 0;
-        }
-
-        label {
-            display: block;
-            margin-top: 18px;
-            font-weight: 700;
-            color: #4d3036;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            margin-top: 8px;
-            border: 1px solid #d4c2c3;
-            border-radius: 10px;
-            box-sizing: border-box;
-            background: #fbf7f7;
-            color: #302e2f;
-        }
-
-        input[type="file"] {
-            background: #ffffff;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #b03a4a;
-            box-shadow: 0 0 0 3px rgba(140, 22, 37, 0.12);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 96px;
-        }
-
-        /* Estilos para la previsualización de la imagen */
-        #preview-container {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px dashed #d4c2c3;
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #fbf7f7;
-        }
-
-        #image-preview {
-            max-width: 100%;
-            max-height: 250px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        #remove-image {
-            background: #5b5b5b;
-            margin-top: 0;
-            width: auto;
-            padding: 8px 16px;
-        }
-
-        #remove-image:hover {
-            background: #333333;
-        }
-
-        button {
-            margin-top: 18px;
-            background: #8c1625;
-            color: white;
-            border: none;
-            padding: 14px 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 700;
-            width: 100%;
-        }
-
-        button:hover {
-            background: #701122;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .message {
-            margin-top: 16px;
-            color: #8c1625;
-            font-weight: 700;
-        }
-
-        .toast {
+        /* Toast flotante con microanimación */
+        #toast {
             position: fixed;
-            right: 20px;
-            bottom: 20px;
-            background: #8c1625;
-            color: white;
-            padding: 14px 18px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.16);
-            display: none;
+            bottom: 1.5rem;
+            right: 1.5rem;
             z-index: 100;
-        }
-
-        .toast.show {
-            display: block;
-        }
-
-        footer {
-            width: 100%;
-            max-width: 700px;
-            box-sizing: border-box;
-            margin-top: 20px;
-            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(15, 23, 42, 0.94);
             color: #ffffff;
-            background: rgba(91, 91, 91, 0.92);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            font-size: 0.78rem;
-            font-weight: 700;
-            line-height: 1.5;
-            letter-spacing: 0.03em;
-            text-align: center;
+            padding: 0.9rem 1.25rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transform: translateY(140%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            max-width: calc(100vw - 2rem);
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-            nav {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 10px;
-                padding: 14px 16px;
-                margin-bottom: 12px;
-            }
+        #toast::before {
+            content: '';
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%2334d399'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
 
-            nav .brand,
-            nav a {
-                overflow-wrap: anywhere;
-            }
-
-            .card-body {
-                padding: 18px 14px;
-            }
-
-            .card-header {
-                padding: 18px 14px;
-                font-size: 1.2rem;
-            }
-
-            h1 {
-                font-size: 1.3rem;
-            }
-
-            footer {
-                margin-top: 14px;
-                padding: 12px 14px;
-                font-size: 0.72rem;
-            }
+        /* Ocultar input file por defecto manteniendo accesibilidad */
+        .file-upload-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
-<body>
-    <nav>
-        <div class="brand">Sistema de reporte de incidentes ESTi</div>
-        <a href="admin-login.html">Iniciar sesión</a>
-    </nav>
-    <div class="card">
-        <div class="card-header">Reporte de anomalías</div>
-        <div class="card-body">
-            <h1>Reporte de anomalías</h1>
-            <p>Selecciona el tipo de espacio y describe la incidencia que deseas reportar.</p>
 
-            <form id="reporteForm">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required>
+<body
+    class="min-h-screen font-sans bg-slate-900 text-slate-800 flex flex-col items-center justify-between p-3.5 sm:p-6 relative overflow-x-hidden selection:bg-institucional-600 selection:text-white">
+    <!-- Fondo con imagen institucional y gradiente atmosférico -->
+    <div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat filter brightness-90"
+        style="background-image: url('fondo_b.png');"></div>
+    <div
+        class="fixed inset-0 z-0 bg-gradient-to-tr from-slate-950/85 via-slate-900/65 to-institucional-950/75 backdrop-blur-[2px]">
+    </div>
 
-                <label for="tipoLugar">Tipo de espacio:</label>
-                <select id="tipoLugar" name="tipoLugar" required>
-                    <option value="">Selecciona una opción</option>
-                    <option value="Aula">Aula</option>
-                    <option value="Baño">Baño</option>
-                </select>
+    <!-- Barra de Navegación Superior -->
+    <header class="w-full max-w-2xl mx-auto mb-4 sm:mb-6 relative z-10">
+        <nav
+            class="flex items-center justify-between p-3 sm:p-4 bg-white/90 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-black/5 transition-all">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-institucional-700 to-institucional-500 text-white flex items-center justify-center shadow-md shadow-institucional-600/30 ring-2 ring-institucional-100 flex-shrink-0">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                </div>
+                <div>
+                    <span
+                        class="block text-sm sm:text-base font-extrabold text-slate-900 tracking-tight leading-tight">Sistema
+                        de Reportes ESTi</span>
+                    <span class="block text-[11px] sm:text-xs font-semibold text-slate-500">Atención de anomalías e
+                        incidencias</span>
+                </div>
+            </div>
 
-                <div id="edificioGroup" class="hidden">
-                    <label for="edificio">Edificio:</label>
-                    <select id="edificio" name="edificio">
-                        <option value="">Selecciona un edificio</option>
-                        <option value="Modulo 1">Módulo 1</option>
-                        <option value="Modulo 2">Módulo 2</option>
-                        <option value="Modulo 3">Módulo 3</option>
-                        <option value="Modulo 4">Módulo 4</option>
-                        <option value="Modulo 5">Módulo 5</option>
-                        <option value="Laboratorios">Laboratorios</option>
-                    </select>
+            <a href="admin-login.html"
+                class="inline-flex items-center gap-2 py-2 px-3 sm:px-4 rounded-xl bg-slate-100 hover:bg-institucional-50 text-slate-700 hover:text-institucional-700 border border-slate-200/80 hover:border-institucional-200 text-xs sm:text-sm font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+                <svg class="w-4 h-4 text-institucional-600 flex-shrink-0" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Acceso Admin</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Contenedor Principal de la Tarjeta del Reporte -->
+    <main class="w-full max-w-2xl mx-auto relative z-10 my-auto">
+        <div
+            class="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/60 overflow-hidden transition-all">
+
+            <!-- Encabezado llamativo con degradado institucional -->
+            <div
+                class="bg-gradient-to-r from-institucional-800 via-institucional-700 to-institucional-600 text-white p-6 sm:p-8 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/5 pointer-events-none"></div>
+                <div
+                    class="absolute right-12 -top-10 w-28 h-28 rounded-full bg-institucional-500/20 blur-xl pointer-events-none">
                 </div>
 
-                <div id="generoGroup" class="hidden">
-                    <label for="genero">Género:</label>
-                    <select id="genero" name="genero">
-                        <option value="">Selecciona género</option>
-                        <option value="Hombres">Baño de hombres</option>
-                        <option value="Mujeres">Baño de mujeres</option>
-                    </select>
+                <div
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-bold tracking-wider uppercase mb-3 border border-white/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Recepción de reportes activa
                 </div>
 
-                <div id="pisoGroup" class="hidden">
-                    <label for="piso">Piso:</label>
-                    <select id="piso" name="piso">
-                        <option value="">Selecciona piso</option>
-                        <option value="Planta alta">Planta alta</option>
-                        <option value="Planta baja">Planta baja</option>
-                    </select>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">Reporte de
+                    Anomalías</h1>
+                <p class="text-slate-100/90 text-sm sm:text-base mt-2 font-normal leading-relaxed">
+                    Registra cualquier falla o desperfecto en las instalaciones para su oportuna atención y seguimiento
+                    por el equipo de intendencia.
+                </p>
+            </div>
+
+            <!-- Formulario de Reporte -->
+            <form id="reporteForm" class="p-6 sm:p-8 space-y-5">
+
+                <!-- Campo: Nombre de quien reporta -->
+                <div>
+                    <label for="nombre" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Tu nombre completo <span class="text-institucional-600">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Carlos López" required
+                            class="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400" />
+                        <div
+                            class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-                <label for="ubicacion">Ubicación específica:</label>
-                <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej. Aula 302 o Baño del primer piso">
-
-                <label for="descripcion">Descripción de la anomalía:</label>
-                <textarea id="descripcion" name="descripcion" required></textarea>
-
-                <!-- NUEVA SECCIÓN DE EVIDENCIA FOTOGRÁFICA -->
-                <label for="evidencia">Evidencia fotográfica (Opcional):</label>
-                <input type="file" id="evidencia" name="evidencia" accept="image/*">
-                
-                <div id="preview-container" class="hidden">
-                    <img id="image-preview" src="" alt="Vista previa">
-                    <button type="button" id="remove-image">Quitar imagen</button>
+                <!-- Campo: Tipo de espacio -->
+                <div>
+                    <label for="tipoLugar"
+                        class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Tipo de espacio <span class="text-institucional-600">*</span>
+                    </label>
+                    <div class="relative">
+                        <select id="tipoLugar" name="tipoLugar" required
+                            class="w-full h-12 pl-11 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Aula">Aula</option>
+                            <option value="Baño">Baño</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                        <div
+                            class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                        </div>
+                        <div
+                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <!-- FIN SECCIÓN DE EVIDENCIA -->
 
-                <button type="submit">Enviar reporte</button>
-                <p id="mensaje" class="message"></p>
+                <!-- Campo condicional: Módulo / Edificio -->
+                <div id="edificioGroup" class="hidden transition-all duration-200">
+                    <label for="edificio" id="edificioLabel"
+                        class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Módulo / Edificio:
+                    </label>
+                    <div class="relative">
+                        <select id="edificio" name="edificio"
+                            class="w-full h-12 pl-11 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                            <option value="">Selecciona un módulo</option>
+                            <option value="Modulo 1">Módulo 1</option>
+                            <option value="Modulo 2">Módulo 2</option>
+                            <option value="Modulo 3">Módulo 3</option>
+                            <option value="Modulo 4">Módulo 4</option>
+                            <option value="Modulo 5">Módulo 5</option>
+                            <option value="Laboratorios">Laboratorios</option>
+                        </select>
+                        <div
+                            class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                                <line x1="9" y1="22" x2="9" y2="22.01"></line>
+                                <line x1="15" y1="22" x2="15" y2="22.01"></line>
+                                <line x1="9" y1="6" x2="9" y2="6.01"></line>
+                                <line x1="15" y1="6" x2="15" y2="6.01"></line>
+                                <line x1="9" y1="10" x2="9" y2="10.01"></line>
+                                <line x1="15" y1="10" x2="15" y2="10.01"></line>
+                                <line x1="9" y1="14" x2="9" y2="14.01"></line>
+                                <line x1="15" y1="14" x2="15" y2="14.01"></line>
+                            </svg>
+                        </div>
+                        <div
+                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos condicionales para baño: Género y Piso en fila responsiva -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Género -->
+                    <div id="generoGroup" class="hidden transition-all duration-200">
+                        <label for="genero"
+                            class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Género del baño:
+                        </label>
+                        <div class="relative">
+                            <select id="genero" name="genero"
+                                class="w-full h-12 pl-11 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                                <option value="">Selecciona género</option>
+                                <option value="Hombres">Baño de hombres</option>
+                                <option value="Mujeres">Baño de mujeres</option>
+                            </select>
+                            <div
+                                class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="5" r="3"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="9" y1="11" x2="15" y2="11"></line>
+                                    <line x1="10" y1="21" x2="12" y2="16"></line>
+                                    <line x1="14" y1="21" x2="12" y2="16"></line>
+                                </svg>
+                            </div>
+                            <div
+                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Piso -->
+                    <div id="pisoGroup" class="hidden transition-all duration-200">
+                        <label for="piso"
+                            class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Piso del baño:
+                        </label>
+                        <div class="relative">
+                            <select id="piso" name="piso"
+                                class="w-full h-12 pl-11 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all appearance-none cursor-pointer">
+                                <option value="">Selecciona piso</option>
+                                <option value="Planta alta">Planta alta</option>
+                                <option value="Planta baja">Planta baja</option>
+                            </select>
+                            <div
+                                class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </div>
+                            <div
+                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campo: Ubicación específica -->
+                <div>
+                    <label for="ubicacion"
+                        class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Ubicación específica o referencia:
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="ubicacion" name="ubicacion"
+                            placeholder="Ej. Aula 302 o Baño frente a escaleras"
+                            class="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400" />
+                        <div
+                            class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campo: Descripción de la anomalía -->
+                <div>
+                    <label for="descripcion"
+                        class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Descripción de la anomalía <span class="text-institucional-600">*</span>
+                    </label>
+                    <div class="relative">
+                        <textarea id="descripcion" name="descripcion" rows="3" required
+                            placeholder="Describe con claridad la anomalía (ej. fuga de agua en lavabo, ventana rota, lámpara sin luz, chapa trabada, etc.)..."
+                            class="w-full p-3.5 pl-11 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400 resize-y min-h-[100px]"></textarea>
+                        <div
+                            class="absolute top-3.5 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE EVIDENCIA FOTOGRÁFICA -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Evidencia fotográfica (Opcional):
+                    </label>
+
+                    <!-- Zona interactiva de subida -->
+                    <label for="evidencia"
+                        class="group flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-dashed border-slate-300 hover:border-institucional-500 bg-slate-50/70 hover:bg-institucional-50/30 transition-all cursor-pointer text-center">
+                        <input type="file" id="evidencia" name="evidencia" accept="image/*" class="file-upload-input" />
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-500 group-hover:text-institucional-600 group-hover:scale-110 group-hover:shadow-md transition-all mb-2">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-sm font-bold text-slate-700 group-hover:text-institucional-700 transition-colors">
+                            Toca para seleccionar o tomar una fotografía
+                        </span>
+                        <span class="text-xs text-slate-400 mt-0.5">
+                            Formatos JPG, PNG o WEBP (máximo 2 MB)
+                        </span>
+                    </label>
+
+                    <!-- Contenedor de previsualización -->
+                    <div id="preview-container"
+                        class="hidden mt-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img id="image-preview" src="" alt="Vista previa"
+                                class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl shadow-md border border-slate-200 flex-shrink-0" />
+                            <div>
+                                <span class="block text-xs font-bold text-slate-800">Fotografía seleccionada</span>
+                                <span class="block text-[11px] text-slate-500">Lista para ser enviada con el
+                                    reporte</span>
+                            </div>
+                        </div>
+                        <button type="button" id="remove-image"
+                            class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer flex-shrink-0">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                            </svg>
+                            <span>Quitar imagen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mensaje de estado / feedback -->
+                <div id="mensaje" class="empty:hidden p-3.5 rounded-xl text-xs sm:text-sm font-bold transition-all">
+                </div>
+
+                <!-- Botón de Envío -->
+                <button type="submit" id="submitBtn"
+                    class="w-full h-13 py-3.5 px-6 rounded-xl bg-gradient-to-r from-institucional-600 to-institucional-700 hover:from-institucional-700 hover:to-institucional-800 text-white font-bold text-sm sm:text-base shadow-lg shadow-institucional-600/30 hover:shadow-xl hover:shadow-institucional-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                    <span>Enviar reporte</span>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+
             </form>
         </div>
-    </div>
-    <div id="toast" class="toast"></div>
-   
+    </main>
 
+    <!-- Toast de Notificación Flotante -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Pie de Página -->
+    <footer
+        class="w-full max-w-2xl mx-auto mt-4 sm:mt-6 py-3.5 px-5 rounded-2xl bg-white/80 backdrop-blur-md border border-white/50 shadow-lg text-center text-[11px] sm:text-xs font-bold text-slate-600 tracking-wider uppercase relative z-10">
+        REALIZADO POR • GARCIA GALICIA DANIEL CAMILO • LICENCIATURA EN TECNOLOGÍAS DE LA
+        INFORMACIÓN
+    </footer>
+
+    <!-- Lógica de la Aplicación -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
@@ -351,14 +467,17 @@
         const tipoLugar = document.getElementById('tipoLugar');
         const edificioGroup = document.getElementById('edificioGroup');
         const edificioSelect = document.getElementById('edificio');
+        const edificioLabel = document.getElementById('edificioLabel');
         const generoGroup = document.getElementById('generoGroup');
         const generoSelect = document.getElementById('genero');
         const pisoGroup = document.getElementById('pisoGroup');
         const pisoSelect = document.getElementById('piso');
+        const ubicacionInput = document.getElementById('ubicacion');
         const form = document.getElementById('reporteForm');
         const mensaje = document.getElementById('mensaje');
         const toast = document.getElementById('toast');
-        
+        const submitBtn = document.getElementById('submitBtn');
+
         // Elementos para la evidencia fotográfica
         const evidenciaInput = document.getElementById('evidencia');
         const previewContainer = document.getElementById('preview-container');
@@ -367,6 +486,20 @@
         let base64Image = ''; // Variable para almacenar la imagen codificada
 
         const bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null;
+
+        // Estilos dinámicos para los mensajes de alerta
+        function setMensaje(texto, tipo = 'error') {
+            mensaje.textContent = texto;
+            if (!texto) {
+                mensaje.className = 'empty:hidden p-3.5 rounded-xl text-xs sm:text-sm font-bold transition-all';
+                return;
+            }
+            if (tipo === 'error') {
+                mensaje.className = 'p-3.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-2';
+            } else {
+                mensaje.className = 'p-3.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2';
+            }
+        }
 
         async function getIncidentes() {
             try {
@@ -383,18 +516,32 @@
             }
         }
 
-        function getResponsablesModulo(edificio) {
-            const responsablesPorModulo = {
-                'Modulo 1': ['Hermelinda', 'Maika'],
-                'Modulo 2': ['Liliana', 'Diego'],
-                'Modulo 3': ['Anita', 'Ricardo'],
-                'Modulo 4': ['Oscar', 'Jesus'],
-                'Modulo 5': ['Gabriela'],
-                'Laboratorios':[]
-            };
+        const RESPONSABLES_POR_MODULO = {
+            'Modulo 1': ['Hermelinda', 'Maika', 'Sotero'],
+            'Modulo 2': ['Liliana', 'Diego', 'Sotero'],
+            'Modulo 3': ['Anita', 'Ricardo', 'Sotero'],
+            'Modulo 4': ['Oscar', 'Cynthia', 'Sotero'],
+            'Modulo 5': ['Gabriela', 'Jesus', 'Sotero'],
+            'Laboratorios': ['Gabriela', 'Jesus', 'Sotero']
+        };
 
-            const modulo = String(edificio || '').trim();
-            return responsablesPorModulo[modulo] || ['Sin asignar'];
+        function getModuloKey(edificio) {
+            const value = String(edificio || '').trim();
+            if (!value) return 'Sin módulo';
+
+            const normalized = value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (normalized.includes('modulo 1') || normalized.includes('modulo1') || normalized.includes('edificio a')) return 'Modulo 1';
+            if (normalized.includes('modulo 2') || normalized.includes('modulo2') || normalized.includes('edificio b')) return 'Modulo 2';
+            if (normalized.includes('modulo 3') || normalized.includes('modulo3') || normalized.includes('edificio c')) return 'Modulo 3';
+            if (normalized.includes('modulo 4') || normalized.includes('modulo4') || normalized.includes('edificio d')) return 'Modulo 4';
+            if (normalized.includes('modulo 5') || normalized.includes('modulo5') || normalized.includes('edificio e')) return 'Modulo 5';
+            if (normalized.includes('laboratorio')) return 'Laboratorios';
+            return value;
+        }
+
+        function getResponsablesModulo(edificio) {
+            const moduloKey = getModuloKey(edificio);
+            return RESPONSABLES_POR_MODULO[moduloKey] || ['Sin asignar'];
         }
 
         async function saveIncidente(incidente) {
@@ -422,16 +569,22 @@
             clearTimeout(toast.hideTimeout);
             toast.hideTimeout = setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3500);
+            }, 3800);
         }
 
-        // Lógica para mostrar ocultar campos condicionales
+        // Lógica para mostrar/ocultar campos condicionales
         tipoLugar.addEventListener('change', () => {
-            const mostrarEdificio = tipoLugar.value === 'Aula';
-            const mostrarGenero = tipoLugar.value === 'Baño';
+            const esAula = tipoLugar.value === 'Aula';
+            const esBanio = tipoLugar.value === 'Baño';
+            const mostrarEdificio = esAula || esBanio;
+            const mostrarGenero = esBanio;
 
+            setMensaje('');
             edificioGroup.classList.toggle('hidden', !mostrarEdificio);
             edificioSelect.required = mostrarEdificio;
+            if (edificioLabel) {
+                edificioLabel.textContent = esBanio ? 'Módulo:' : 'Módulo / Edificio:';
+            }
             if (!mostrarEdificio) edificioSelect.value = '';
 
             generoGroup.classList.toggle('hidden', !mostrarGenero);
@@ -441,6 +594,16 @@
                 pisoSelect.value = '';
                 pisoGroup.classList.add('hidden');
                 pisoSelect.required = false;
+            }
+
+            if (ubicacionInput) {
+                if (esBanio) {
+                    ubicacionInput.placeholder = 'Ej. Baño frente a escaleras o junto al cubículo';
+                } else if (esAula) {
+                    ubicacionInput.placeholder = 'Ej. Aula 302 o Laboratorio de cómputo';
+                } else {
+                    ubicacionInput.placeholder = 'Ej. Aula 302 o Baño del primer piso';
+                }
             }
         });
 
@@ -452,11 +615,11 @@
         });
 
         // LÓGICA DE LA EVIDENCIA FOTOGRÁFICA
-        evidenciaInput.addEventListener('change', function(event) {
+        evidenciaInput.addEventListener('change', function (event) {
             const file = event.target.files[0];
-            
+
             if (file) {
-                // Limitar tamaño a 2MB para evitar saturar el localStorage
+                // Limitar tamaño a 2MB para evitar saturar el almacenamiento
                 if (file.size > 2 * 1024 * 1024) {
                     alert('La imagen es demasiado grande. Por favor, selecciona una menor a 2MB.');
                     removeImageBtn.click();
@@ -464,19 +627,19 @@
                 }
 
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     base64Image = e.target.result; // Se guarda la cadena Base64
                     imagePreview.src = base64Image;
                     previewContainer.classList.remove('hidden');
                 };
-                reader.readAsDataURL(file); // Lee el archivo como URL de datos (Base64)
+                reader.readAsDataURL(file);
             } else {
                 removeImageBtn.click();
             }
         });
 
         // Botón para quitar la imagen seleccionada
-        removeImageBtn.addEventListener('click', function() {
+        removeImageBtn.addEventListener('click', function () {
             evidenciaInput.value = '';
             base64Image = '';
             imagePreview.src = '';
@@ -487,55 +650,80 @@
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            if (tipoLugar.value === 'Aula' && !edificioSelect.value) {
-                mensaje.textContent = 'Selecciona el edificio antes de enviar el reporte.';
+            if ((tipoLugar.value === 'Aula' || tipoLugar.value === 'Baño') && !edificioSelect.value) {
+                setMensaje(tipoLugar.value === 'Baño'
+                    ? 'Selecciona el módulo del baño antes de enviar el reporte.'
+                    : 'Selecciona el módulo / edificio antes de enviar el reporte.', 'error');
                 return;
             }
 
             if (tipoLugar.value === 'Baño') {
                 if (!generoSelect.value) {
-                    mensaje.textContent = 'Selecciona el género del baño.';
+                    setMensaje('Selecciona el género del baño.', 'error');
                     return;
                 }
                 if (!pisoSelect.value) {
-                    mensaje.textContent = 'Selecciona el piso del baño.';
+                    setMensaje('Selecciona el piso del baño.', 'error');
                     return;
                 }
             }
 
-            const moduloAsignado = edificioSelect.value || 'Sin módulo';
-            const incidente = {
-                id: Date.now(),
-                fecha: new Date().toISOString(),
-                nombre: document.getElementById('nombre').value.trim(),
-                tipoLugar: tipoLugar.value,
-                edificio: edificioSelect.value,
-                genero: generoSelect ? generoSelect.value : '',
-                piso: pisoSelect ? pisoSelect.value : '',
-                ubicacion: document.getElementById('ubicacion').value.trim(),
-                descripcion: document.getElementById('descripcion').value.trim(),
-                evidencia: base64Image,
-                status: 'En curso',
-                responsable: getResponsablesModulo(moduloAsignado)[0] || 'Sin asignar'
-            };
+            // Deshabilitar botón durante el envío
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Enviando reporte...</span>
+            `;
 
-            await saveIncidente(incidente);
-            if (bc) {
-                bc.postMessage({ type: 'nuevo-reporte' });
+            try {
+                const moduloAsignado = edificioSelect.value || 'Sin módulo';
+                const incidente = {
+                    id: Date.now(),
+                    fecha: new Date().toISOString(),
+                    nombre: document.getElementById('nombre').value.trim(),
+                    tipoLugar: tipoLugar.value,
+                    edificio: edificioSelect.value,
+                    genero: generoSelect ? generoSelect.value : '',
+                    piso: pisoSelect ? pisoSelect.value : '',
+                    ubicacion: document.getElementById('ubicacion').value.trim(),
+                    descripcion: document.getElementById('descripcion').value.trim(),
+                    evidencia: base64Image,
+                    status: 'En curso',
+                    responsable: getResponsablesModulo(moduloAsignado)[0] || 'Sin asignar'
+                };
+
+                await saveIncidente(incidente);
+                if (bc) {
+                    bc.postMessage({ type: 'nuevo-reporte' });
+                }
+                window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: localStorage.getItem(STORAGE_KEY) }));
+
+                setMensaje('¡Reporte enviado exitosamente! Gracias por colaborar en mantener nuestras instalaciones.', 'success');
+                showToast('Reporte enviado correctamente. El panel de incidentes se actualizará.');
+
+                // Limpiar formulario y reiniciar vistas
+                form.reset();
+                edificioGroup.classList.add('hidden');
+                generoGroup.classList.add('hidden');
+                pisoGroup.classList.add('hidden');
+                if (edificioLabel) edificioLabel.textContent = 'Módulo / Edificio:';
+                if (ubicacionInput) ubicacionInput.placeholder = 'Ej. Aula 302 o Baño del primer piso';
+                removeImageBtn.click();
+            } catch (err) {
+                console.error(err);
+                setMensaje('Ocurrió un error al guardar el reporte. Inténtalo de nuevo.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                submitBtn.innerHTML = originalBtnHtml;
             }
-            window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: localStorage.getItem(STORAGE_KEY) }));
-
-            mensaje.textContent = 'Reporte enviado correctamente. Gracias por tu ayuda.';
-            showToast('Reporte enviado. El panel de incidentes se actualizará automáticamente.');
-            
-            // Limpiar formulario y reiniciar vistas
-            form.reset();
-            edificioGroup.classList.add('hidden');
-            generoGroup.classList.add('hidden');
-            pisoGroup.classList.add('hidden');
-            removeImageBtn.click();
         });
     </script>
-<footer>PROYECTO REALIZADO POR DANIEL CAMILO GARCIA GALICIA</footer>
 </body>
+
 </html>
