@@ -181,8 +181,13 @@
                         Tu nombre completo <span class="text-institucional-600">*</span>
                     </label>
                     <div class="relative">
-                        <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Carlos López" required
-                            class="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400" />
+                        <input type="text" 
+                                id="nombre" 
+                                name="nombre" 
+                                placeholder="Nombre Completo" required
+                                maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,50}"
+                                title="Solo se permiten letras y espacios, con longitud entre 3 y 50 caracteres"
+                                class="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium text-sm focus:bg-white focus:outline-none focus:border-institucional-600 focus:ring-4 focus:ring-institucional-600/10 transition-all placeholder:text-slate-400" />
                         <div
                             class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
