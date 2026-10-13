@@ -4,7 +4,8 @@
   "description": "Sistema de reportes con backend compartido para varios dispositivos",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "manual:pdf": "node generate_manual_pdf.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
